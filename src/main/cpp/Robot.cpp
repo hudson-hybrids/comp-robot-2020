@@ -41,16 +41,16 @@ void Robot::TeleopPeriodic() {
 void Robot::TestPeriodic() {}
 
 void Robot::Drive() {
-	const double MAXIMUM_Y_SPEED_MULTIPLIER = .9;
-	const double MAXIMUM_Z_SPEED_MULTIPLIER = .72;
+	const double MAXIMUM_Y_SPEED_MULTIPLIER = 0.9;
+	const double MAXIMUM_Z_SPEED_MULTIPLIER = 0.72;
 
-	const double MINIMUM_Y_SPEED_MULTIPLIER = .48;
-	const double MINIMUM_Z_SPEED_MULTIPLIER = .35;
+	const double MINIMUM_Y_SPEED_MULTIPLIER = 0.48;
+	const double MINIMUM_Z_SPEED_MULTIPLIER = 0.35;
 
 	const double NORMAL_Y_SPEED_MULTIPLIER = 0.6;
 	const double NORMAL_Z_SPEED_MULTIPLIER = 0.48;
 
-	const double ACCELERATION = 0.001;
+	const double ACCELERATION = 0.004;
 
 	if (joystick.GetRawButton(JoystickMap::INCREASE_SPEED_BUTTON_ID)) {
 		if (ySpeedMultiplier <= MAXIMUM_Y_SPEED_MULTIPLIER) {
