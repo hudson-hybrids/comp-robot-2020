@@ -10,10 +10,18 @@
 void Robot::RobotInit() {
 	autoModeChooser.SetDefaultOption(DEFAULT_AUTO_MODE_NAME, DEFAULT_AUTO_MODE_NAME);
 	autoModeChooser.AddOption(CUSTOM_AUTO_MODE_NAME, CUSTOM_AUTO_MODE_NAME);
-	frc::SmartDashboard::PutData("Auto Modes", &autoModeChooser);
+	frc::SmartDashboard::PutData("auto_modes", &autoModeChooser);
+
+	frc::CameraServer::GetInstance()->StartAutomaticCapture("rear_camera", 0);
 }
 
-void Robot::RobotPeriodic() {}
+void Robot::RobotPeriodic() {
+	frc::Color detectedColor = colorSensor.GetColor();
+
+	frc::SmartDashboard::PutNumber("red", detectedColor.red);
+	frc::SmartDashboard::PutNumber("green", detectedColor.green);
+	frc::SmartDashboard::PutNumber("blue", detectedColor.blue);
+}
 
 void Robot::AutonomousInit() {
 	selectedAutoMode = autoModeChooser.GetSelected();

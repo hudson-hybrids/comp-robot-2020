@@ -18,6 +18,8 @@
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/SpeedControllerGroup.h>
 #include <frc/Joystick.h>
+#include <cameraserver/CameraServer.h>
+#include <rev/ColorSensorV3.h>
 
 #include "RobotMap.h"
 #include "JoystickMap.h"
@@ -35,6 +37,8 @@ class Robot : public frc::TimedRobot {
 		void TestPeriodic() override;
 
 	private:
+		static constexpr frc::I2C::Port i2cPort = frc::I2C::Port::kOnboard;
+
 		const std::string DEFAULT_AUTO_MODE_NAME = "default";
 		const std::string CUSTOM_AUTO_MODE_NAME = "custom";
 
@@ -52,6 +56,8 @@ class Robot : public frc::TimedRobot {
 		frc::DifferentialDrive differentialDrive{leftGroup, rightGroup};
 
 		frc::Joystick joystick{JoystickMap::JOYSTICK_ID};
+
+		rev::ColorSensorV3 colorSensor{i2cPort};
 
 		double ySpeedMultiplier = 0.6;
 		double zSpeedMultiplier = 0.48;
