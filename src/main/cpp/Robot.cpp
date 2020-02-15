@@ -12,15 +12,58 @@ void Robot::RobotInit() {
 	autoModeChooser.AddOption(CUSTOM_AUTO_MODE_NAME, CUSTOM_AUTO_MODE_NAME);
 	frc::SmartDashboard::PutData("auto_modes", &autoModeChooser);
 
+	ntInstance = nt::NetworkTableInstance::GetDefault();
+	processingDataTable = ntInstance.GetTable("vision_processing");
+	runPi = processingDataTable->GetEntry("run_pi");
+	runPi.SetBoolean(true);
+
+	frc::SmartDashboard::PutBoolean("reset_pin", false);
+
 	frc::CameraServer::GetInstance()->StartAutomaticCapture("rear_camera", 0);
 }
 
 void Robot::RobotPeriodic() {
+	frc::Color blue = frc::Color(.12, .42, .45);
+	frc::Color green = frc::Color(.17, .57, .25);
+	frc::Color red = frc::Color(.52, .35, .13);
+	frc::Color yellow = frc::Color(.32, .56, .12);
+	
+	rev::ColorMatch colorMatch;
+	double confidence = 1.0;
+	std::string color;
+	colorMatch.AddColorMatch(blue);
+	colorMatch.AddColorMatch(green);
+	colorMatch.AddColorMatch(red);
+	colorMatch.AddColorMatch(yellow);
+	
 	frc::Color detectedColor = colorSensor.GetColor();
+	frc::Color currentColor = colorMatch.MatchClosestColor(detectedColor, confidence);
+	if (currentColor == blue) {
+		color = "blue";
+	}
+	else if (currentColor == green) {
+		color = "green";
+	}
+	else if (currentColor == red) {
+		color = "red";
+	}
+	else if (currentColor == yellow) {
+		color = "yellow";
+	}
+	else {
+		color = "no recognizable color";
+	}
 
 	frc::SmartDashboard::PutNumber("red", detectedColor.red);
 	frc::SmartDashboard::PutNumber("green", detectedColor.green);
 	frc::SmartDashboard::PutNumber("blue", detectedColor.blue);
+	frc::SmartDashboard::PutString("current_color", color);
+
+	frc::SmartDashboard::PutNumber("distance_0", distanceSensor0.GetValue());
+	frc::SmartDashboard::PutNumber("distance_1", distanceSensor1.GetValue());
+
+	bool resetPi = frc::SmartDashboard::GetBoolean("reset_pin", false);
+	resetPin.Set(resetPi); 
 }
 
 void Robot::AutonomousInit() {
@@ -49,6 +92,7 @@ void Robot::TeleopPeriodic() {
 void Robot::TestPeriodic() {}
 
 void Robot::Drive() {
+	
 	const double MAXIMUM_Y_SPEED_MULTIPLIER = 0.9;
 	const double MAXIMUM_Z_SPEED_MULTIPLIER = 0.72;
 
@@ -99,4 +143,5 @@ void Robot::Drive() {
 	else {
 		differentialDrive.ArcadeDrive(joystick.GetY() * -ySpeedMultiplier, joystick.GetZ() * zSpeedMultiplier);
 	}
+	
 }

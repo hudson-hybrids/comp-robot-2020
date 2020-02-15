@@ -18,8 +18,17 @@
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/SpeedControllerGroup.h>
 #include <frc/Joystick.h>
+#include <frc/AnalogInput.h>
+#include <frc/DigitalOutput.h>
+
+#include "networktables/NetworkTable.h"
+#include "networktables/NetworkTableEntry.h"
+#include "networktables/NetworkTableInstance.h"
+
 #include <cameraserver/CameraServer.h>
+
 #include <rev/ColorSensorV3.h>
+#include <rev/ColorMatch.h>
 
 #include "RobotMap.h"
 #include "JoystickMap.h"
@@ -59,8 +68,16 @@ class Robot : public frc::TimedRobot {
 
 		rev::ColorSensorV3 colorSensor{i2cPort};
 
+		nt::NetworkTableInstance ntInstance;
+		std::shared_ptr<NetworkTable> processingDataTable;
+        nt::NetworkTableEntry runPi;
+
 		double ySpeedMultiplier = 0.6;
 		double zSpeedMultiplier = 0.48;
+
+		frc::AnalogInput distanceSensor0{0};
+		frc::AnalogInput distanceSensor1{1};
+		frc::DigitalOutput resetPin{0};
 
 		void Drive();
 };
