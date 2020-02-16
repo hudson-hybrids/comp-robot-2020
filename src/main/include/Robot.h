@@ -20,6 +20,8 @@
 #include <frc/Joystick.h>
 #include <frc/AnalogInput.h>
 #include <frc/DigitalOutput.h>
+#include <frc/Encoder.h>
+#include <frc/controller/PIDController.h>
 
 #include "networktables/NetworkTable.h"
 #include "networktables/NetworkTableEntry.h"
@@ -54,10 +56,10 @@ class Robot : public frc::TimedRobot {
 		frc::SendableChooser<std::string> autoModeChooser;
 		std::string selectedAutoMode;
 
-		WPI_VictorSPX frontLeftMotor{RobotMap::FRONT_LEFT_MOTOR_ID};
-		WPI_VictorSPX backLeftMotor{RobotMap::BACK_LEFT_MOTOR_ID};
-		WPI_VictorSPX frontRightMotor{RobotMap::FRONT_RIGHT_MOTOR_ID};
-		WPI_VictorSPX backRightMotor{RobotMap::BACK_RIGHT_MOTOR_ID};
+		WPI_VictorSPX frontLeftMotor{RobotMap::FRONT_LEFT_MOTOR};
+		WPI_VictorSPX backLeftMotor{RobotMap::BACK_LEFT_MOTOR};
+		WPI_VictorSPX frontRightMotor{RobotMap::FRONT_RIGHT_MOTOR};
+		WPI_VictorSPX backRightMotor{RobotMap::BACK_RIGHT_MOTOR};
 
 		frc::SpeedControllerGroup leftGroup{frontLeftMotor, backLeftMotor};
 		frc::SpeedControllerGroup rightGroup{frontRightMotor, backRightMotor};
@@ -75,9 +77,13 @@ class Robot : public frc::TimedRobot {
 		double ySpeedMultiplier = 0.6;
 		double zSpeedMultiplier = 0.48;
 
-		frc::AnalogInput distanceSensor0{0};
-		frc::AnalogInput distanceSensor1{1};
-		frc::DigitalOutput resetPin{0};
+		frc::AnalogInput topSonarSensor{RobotMap::TOP_SONAR_SENSOR};
+		frc::AnalogInput bottomSonarSensor{RobotMap::BOTTOM_SONAR_SENSOR};
+		frc::DigitalOutput resetPin{RobotMap::PI_RESET_PIN};
+
+		frc::Encoder leftDriveEncoder{RobotMap::LEFT_DRIVE_ENCODER_A, RobotMap::LEFT_DRIVE_ENCODER_B};
+		frc::Encoder rightDriveEncoder{RobotMap::RIGHT_DRIVE_ENCODER_A, RobotMap::RIGHT_DRIVE_ENCODER_B};
 
 		void Drive();
+		void MoveToPosition(double x, double y);
 };

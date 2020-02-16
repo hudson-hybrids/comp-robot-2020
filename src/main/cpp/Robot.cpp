@@ -7,6 +7,8 @@
 
 #include "Robot.h"
 
+//BEGIN OVERRIDES
+
 void Robot::RobotInit() {
 	autoModeChooser.SetDefaultOption(DEFAULT_AUTO_MODE_NAME, DEFAULT_AUTO_MODE_NAME);
 	autoModeChooser.AddOption(CUSTOM_AUTO_MODE_NAME, CUSTOM_AUTO_MODE_NAME);
@@ -54,8 +56,8 @@ void Robot::RobotPeriodic() {
 	frc::SmartDashboard::PutNumber("blue", detectedColor.blue);
 	frc::SmartDashboard::PutString("current_color", color);
 
-	frc::SmartDashboard::PutNumber("distance_0", distanceSensor0.GetValue());
-	frc::SmartDashboard::PutNumber("distance_1", distanceSensor1.GetValue());
+	frc::SmartDashboard::PutNumber("distance_0", topSonarSensor.GetValue());
+	frc::SmartDashboard::PutNumber("distance_1", bottomSonarSensor.GetValue());
 
 	bool resetPi = frc::SmartDashboard::GetBoolean("reset_pin", false);
 	resetPin.Set(resetPi); 
@@ -85,6 +87,13 @@ void Robot::TeleopPeriodic() {
 }
 
 void Robot::TestPeriodic() {}
+
+//END OVERRIDES
+
+
+
+
+
 
 void Robot::Drive() {
 	const double MAXIMUM_Y_SPEED_MULTIPLIER = 0.9;
@@ -137,5 +146,9 @@ void Robot::Drive() {
 	else {
 		differentialDrive.ArcadeDrive(joystick.GetY() * -ySpeedMultiplier, joystick.GetZ() * zSpeedMultiplier);
 	}
+	
+}
+
+void Robot::MoveToPosition(double x, double y) {
 	
 }
