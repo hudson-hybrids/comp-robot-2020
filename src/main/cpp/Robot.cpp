@@ -12,11 +12,6 @@ void Robot::RobotInit() {
 	autoModeChooser.AddOption(CUSTOM_AUTO_MODE_NAME, CUSTOM_AUTO_MODE_NAME);
 	frc::SmartDashboard::PutData("auto_modes", &autoModeChooser);
 
-	ntInstance = nt::NetworkTableInstance::GetDefault();
-	processingDataTable = ntInstance.GetTable("vision_processing");
-	runPi = processingDataTable->GetEntry("run_pi");
-	runPi.SetBoolean(true);
-
 	frc::SmartDashboard::PutBoolean("reset_pin", false);
 
 	frc::CameraServer::GetInstance()->StartAutomaticCapture("rear_camera", 0);
@@ -92,7 +87,6 @@ void Robot::TeleopPeriodic() {
 void Robot::TestPeriodic() {}
 
 void Robot::Drive() {
-	
 	const double MAXIMUM_Y_SPEED_MULTIPLIER = 0.9;
 	const double MAXIMUM_Z_SPEED_MULTIPLIER = 0.72;
 
