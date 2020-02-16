@@ -10,13 +10,15 @@
 //BEGIN OVERRIDES
 
 void Robot::RobotInit() {
+	frc::CameraServer::GetInstance()->StartAutomaticCapture("rear_camera", 0);
+
 	autoModeChooser.SetDefaultOption(DEFAULT_AUTO_MODE_NAME, DEFAULT_AUTO_MODE_NAME);
 	autoModeChooser.AddOption(CUSTOM_AUTO_MODE_NAME, CUSTOM_AUTO_MODE_NAME);
 	frc::SmartDashboard::PutData("auto_modes", &autoModeChooser);
 
 	frc::SmartDashboard::PutBoolean("reset_pin", false);
 
-	frc::CameraServer::GetInstance()->StartAutomaticCapture("rear_camera", 0);
+	InitEncoders();
 }
 
 void Robot::RobotPeriodic() {
@@ -149,6 +151,39 @@ void Robot::Drive() {
 	
 }
 
-void Robot::MoveToPosition(double x, double y) {
-	
+void Robot::InitEncoders() {
+	const double PI = 3.14159265;
+	const double COUNTS_PER_REV = 360;
+	const double WHEEL_DIAMETER_in = 4;
+	const double WHEEL_CIRCUMFERENCE = PI * WHEEL_DIAMETER_in;
+	const double DISTANCE_PER_PULSE = WHEEL_CIRCUMFERENCE / COUNTS_PER_REV;
+
+	leftDriveEncoder.SetDistancePerPulse(DISTANCE_PER_PULSE);
+	rightDriveEncoder.SetDistancePerPulse(DISTANCE_PER_PULSE);
+}
+
+void Robot::MoveToPosition(double xTarget_in, double zTarget_in) {
+	const double TOLERANCE = 0.1;
+	const double P = 0;
+	const double I = 0;
+	const double D = 0;
+
+	frc2::PIDController pidController(P, I, D);
+	const double LEFT_START_Z_in = leftDriveEncoder.GetDistance();
+	const double RIGHT_START_Z_in = rightDriveEncoder.GetDistance();
+
+	while (true) {
+		const double CURRENT_LEFT_Z_in = leftDriveEncoder.GetDistance() - LEFT_START_Z_in;
+		const double CURRENT_RIGHT_Z_in = rightDriveEncoder.GetDistance() - RIGHT_START_Z_in;
+
+		if (CURRENT_LEFT_Z_in - zTarget_in < TOLERANCE && CURRENT_RIGHT_Z_in - zTarget_in < TOLERANCE) {
+			break;
+		}
+
+		const double LEFT_SPEED = pidController.Calculate(CURRENT_LEFT_Z_in, zTarget_in);
+		leftGroup.Set(LEFT_SPEED);
+
+		const double RIGHT_SPEED = pidController.Calculate(CURRENT_RIGHT_Z_in, zTarget_in);
+		rightGroup.Set(RIGHT_SPEED);
+	}
 }

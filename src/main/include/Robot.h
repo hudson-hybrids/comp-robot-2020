@@ -85,5 +85,6 @@ class Robot : public frc::TimedRobot {
 		frc::Encoder rightDriveEncoder{RobotMap::RIGHT_DRIVE_ENCODER_A, RobotMap::RIGHT_DRIVE_ENCODER_B};
 
 		void Drive();
+		void InitEncoders();
 		void MoveToPosition(double x, double y);
 };
