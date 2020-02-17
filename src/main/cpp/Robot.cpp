@@ -18,6 +18,8 @@ void Robot::RobotInit() {
 
 	frc::SmartDashboard::PutBoolean("reset_pin", false);
 
+	frc::SmartDashboard::PutBoolean("light_pin", true);
+
 	InitEncoders();
 }
 
@@ -63,6 +65,9 @@ void Robot::RobotPeriodic() {
 
 	bool resetPi = frc::SmartDashboard::GetBoolean("reset_pin", false);
 	resetPin.Set(resetPi); 
+
+	bool lightOn = frc::SmartDashboard::GetBoolean("light_pin", true);
+	lightPin.Set(lightOn);
 }
 
 void Robot::AutonomousInit() {
