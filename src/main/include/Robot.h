@@ -50,6 +50,8 @@ class Robot : public frc::TimedRobot {
 	private:
 		static constexpr frc::I2C::Port i2cPort = frc::I2C::Port::kOnboard;
 
+		const double PI = 3.14159265;
+
 		const std::string DEFAULT_AUTO_MODE_NAME = "default";
 		const std::string CUSTOM_AUTO_MODE_NAME = "custom";
 
@@ -86,5 +88,7 @@ class Robot : public frc::TimedRobot {
 
 		void Drive();
 		void InitEncoders();
-		void MoveToPosition(double x, double y);
+		void MoveToPosition(double x, double z, double finalAngle);
+		void RotateToAngle(double angle, frc2::PIDController* pidController, double tolerance); 
+		void MoveLength(double length, frc2::PIDController* pidController, double tolerance);
 };

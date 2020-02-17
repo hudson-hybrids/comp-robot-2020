@@ -96,7 +96,6 @@ void Robot::TestPeriodic() {}
 
 
 
-
 void Robot::Drive() {
 	const double MAXIMUM_Y_SPEED_MULTIPLIER = 0.9;
 	const double MAXIMUM_Z_SPEED_MULTIPLIER = 0.72;
@@ -162,28 +161,59 @@ void Robot::InitEncoders() {
 	rightDriveEncoder.SetDistancePerPulse(DISTANCE_PER_PULSE);
 }
 
-void Robot::MoveToPosition(double xTarget_in, double zTarget_in) {
+void Robot::MoveToPosition(double x, double z, double finalAngle) {
 	const double TOLERANCE = 0.1;
 	const double P = 0;
 	const double I = 0;
 	const double D = 0;
 
 	frc2::PIDController pidController(P, I, D);
-	const double LEFT_START_Z_in = leftDriveEncoder.GetDistance();
-	const double RIGHT_START_Z_in = rightDriveEncoder.GetDistance();
+
+	const double ANGLE_rad = (PI / 2) - atan2(z, x);
+	RotateToAngle(ANGLE_rad, &pidController, TOLERANCE);
+
+	const double LENGTH = sqrt(x * x + z * z);
+	MoveLength(LENGTH, &pidController, TOLERANCE);
+
+	RotateToAngle(-ANGLE_rad + finalAngle, &pidController, TOLERANCE);
+}
+
+void Robot::RotateToAngle(double angle, frc2::PIDController* pidController, double tolerance){
+	const double LEFT_START_DISTANCE_in = leftDriveEncoder.GetDistance();
+	const double RIGHT_START_DISTANCE_in = rightDriveEncoder.GetDistance();
+
+	const double ARC_LENGTH_in = 11 * angle;
 
 	while (true) {
-		const double CURRENT_LEFT_Z_in = leftDriveEncoder.GetDistance() - LEFT_START_Z_in;
-		const double CURRENT_RIGHT_Z_in = rightDriveEncoder.GetDistance() - RIGHT_START_Z_in;
+		const double LEFT_DELTA_DISTANCE_in = leftDriveEncoder.GetDistance() - LEFT_START_DISTANCE_in;
+		const double RIGHT_DELTA_DISTANCE_in = rightDriveEncoder.GetDistance() - RIGHT_START_DISTANCE_in;
 
-		if (CURRENT_LEFT_Z_in - zTarget_in < TOLERANCE && CURRENT_RIGHT_Z_in - zTarget_in < TOLERANCE) {
+		if (abs(ARC_LENGTH_in - LEFT_DELTA_DISTANCE_in) < tolerance && abs(ARC_LENGTH_in - RIGHT_DELTA_DISTANCE_in) < tolerance) {
 			break;
 		}
 
-		const double LEFT_SPEED = pidController.Calculate(CURRENT_LEFT_Z_in, zTarget_in);
-		leftGroup.Set(LEFT_SPEED);
-
-		const double RIGHT_SPEED = pidController.Calculate(CURRENT_RIGHT_Z_in, zTarget_in);
+		const double LEFT_SPEED = pidController->Calculate(LEFT_DELTA_DISTANCE_in, ARC_LENGTH_in);
+		leftGroup.Set(-LEFT_SPEED);
+		const double RIGHT_SPEED = pidController->Calculate(RIGHT_DELTA_DISTANCE_in, ARC_LENGTH_in);
 		rightGroup.Set(RIGHT_SPEED);
 	}
+}
+
+void Robot::MoveLength(double length, frc2::PIDController* pidController, double tolerance){
+	const double LEFT_START_DISTANCE_in = leftDriveEncoder.GetDistance();
+	const double RIGHT_START_DISTANCE_in = rightDriveEncoder.GetDistance();
+
+	while (true) {
+		const double LEFT_DELTA_DISTANCE_in = leftDriveEncoder.GetDistance() - LEFT_START_DISTANCE_in;
+		const double RIGHT_DELTA_DISTANCE_in = rightDriveEncoder.GetDistance() - RIGHT_START_DISTANCE_in;
+		
+		if (abs(length - LEFT_DELTA_DISTANCE_in) < tolerance && abs(length - RIGHT_DELTA_DISTANCE_in) < tolerance) {
+			break;
+		}
+		const double LEFT_SPEED = pidController->Calculate(LEFT_DELTA_DISTANCE_in, length);
+		leftGroup.Set(LEFT_SPEED);
+
+		const double RIGHT_SPEED = pidController->Calculate(RIGHT_DELTA_DISTANCE_in, length);
+		rightGroup.Set(RIGHT_SPEED);		
+	}	
 }
