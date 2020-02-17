@@ -82,6 +82,7 @@ class Robot : public frc::TimedRobot {
 		frc::AnalogInput topSonarSensor{RobotMap::TOP_SONAR_SENSOR};
 		frc::AnalogInput bottomSonarSensor{RobotMap::BOTTOM_SONAR_SENSOR};
 		frc::DigitalOutput resetPin{RobotMap::PI_RESET_PIN};
+		frc::DigitalOutput lightPin{RobotMap::LIGHT_PIN};
 
 		frc::Encoder leftDriveEncoder{RobotMap::LEFT_DRIVE_ENCODER_A, RobotMap::LEFT_DRIVE_ENCODER_B};
 		frc::Encoder rightDriveEncoder{RobotMap::RIGHT_DRIVE_ENCODER_A, RobotMap::RIGHT_DRIVE_ENCODER_B};

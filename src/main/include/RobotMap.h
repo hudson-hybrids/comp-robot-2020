@@ -7,6 +7,8 @@ class RobotMap {
 
 		const static int PI_RESET_PIN = 0;
 
+		const static int LIGHT_PIN = 1;
+
 		const static int TOP_SONAR_SENSOR = 0;
 		const static int BOTTOM_SONAR_SENSOR = 1;
 
