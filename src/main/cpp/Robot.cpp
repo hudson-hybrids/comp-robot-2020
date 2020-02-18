@@ -20,7 +20,7 @@ void Robot::RobotInit() {
 
 	frc::SmartDashboard::PutBoolean("light_pin", true);
 
-	InitEncoders();
+	Drive::InitEncoders();
 }
 
 void Robot::RobotPeriodic() {
@@ -156,14 +156,7 @@ void Robot::Drive() {
 }
 
 void Robot::InitEncoders() {
-	const double PI = 3.14159265;
-	const double COUNTS_PER_REV = 360;
-	const double WHEEL_DIAMETER_in = 4;
-	const double WHEEL_CIRCUMFERENCE = PI * WHEEL_DIAMETER_in;
-	const double DISTANCE_PER_PULSE = WHEEL_CIRCUMFERENCE / COUNTS_PER_REV;
 
-	leftDriveEncoder.SetDistancePerPulse(DISTANCE_PER_PULSE);
-	rightDriveEncoder.SetDistancePerPulse(DISTANCE_PER_PULSE);
 }
 
 void Robot::MoveToPosition(double x, double z, double finalAngle) {

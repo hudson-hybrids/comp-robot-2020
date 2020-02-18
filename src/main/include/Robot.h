@@ -34,23 +34,13 @@
 
 #include "RobotMap.h"
 #include "JoystickMap.h"
+#include "command/Drive.h"
 
 using ctre::phoenix::motorcontrol::can::WPI_VictorSPX;
 
-class Robot : public frc::TimedRobot {
-	public:
-		void RobotInit() override;
-		void RobotPeriodic() override;
-		void AutonomousInit() override;
-		void AutonomousPeriodic() override;
-		void TeleopInit() override;
-		void TeleopPeriodic() override;
-		void TestPeriodic() override;
-
+class Robot: public frc::TimedRobot {
 	private:
 		static constexpr frc::I2C::Port i2cPort = frc::I2C::Port::kOnboard;
-
-		const double PI = 3.14159265;
 
 		const std::string DEFAULT_AUTO_MODE_NAME = "default";
 		const std::string CUSTOM_AUTO_MODE_NAME = "custom";
@@ -84,12 +74,17 @@ class Robot : public frc::TimedRobot {
 		frc::DigitalOutput resetPin{RobotMap::PI_RESET_PIN};
 		frc::DigitalOutput lightPin{RobotMap::LIGHT_PIN};
 
-		frc::Encoder leftDriveEncoder{RobotMap::LEFT_DRIVE_ENCODER_A, RobotMap::LEFT_DRIVE_ENCODER_B};
-		frc::Encoder rightDriveEncoder{RobotMap::RIGHT_DRIVE_ENCODER_A, RobotMap::RIGHT_DRIVE_ENCODER_B};
-
 		void Drive();
-		void InitEncoders();
 		void MoveToPosition(double x, double z, double finalAngle);
 		void RotateToAngle(double angle, frc2::PIDController* pidController, double tolerance); 
 		void MoveLength(double length, frc2::PIDController* pidController, double tolerance);
+
+	public:
+		void RobotInit() override;
+		void RobotPeriodic() override;
+		void AutonomousInit() override;
+		void AutonomousPeriodic() override;
+		void TeleopInit() override;
+		void TeleopPeriodic() override;
+		void TestPeriodic() override;
 };
