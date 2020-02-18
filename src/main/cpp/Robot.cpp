@@ -77,7 +77,7 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
-		
+
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
