@@ -1,11 +1,15 @@
-#include "command/Command.h"
+#pragma once
 
-class RotateToAngle: public Command {
+#include <iostream>
+
+#include "command/Drive.h"
+
+class RotateToAngle: public Drive {
 	private:
-		PIDController 
+		const double ANGLE_rad;
 
 	public:
-		RotateToAngle(const double P, const double I, const double D);
+		RotateToAngle(frc::SpeedControllerGroup *leftDrive, frc::SpeedControllerGroup *rightDrive, const double ANGLE_rad, const double TOLERANCE_in);
 
-		void Run() override;
+		void PerformManeuver() override;
 };

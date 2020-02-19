@@ -17,10 +17,7 @@ void Robot::RobotInit() {
 	frc::SmartDashboard::PutData("auto_modes", &autoModeChooser);
 
 	frc::SmartDashboard::PutBoolean("reset_pin", false);
-
 	frc::SmartDashboard::PutBoolean("light_pin", true);
-
-	Drive::InitEncoders();
 }
 
 void Robot::RobotPeriodic() {
@@ -52,7 +49,7 @@ void Robot::RobotPeriodic() {
 		color = "yellow";
 	}
 	else {
-		color = "no recognizable color";
+		color = "unknown_color";
 	}
 
 	frc::SmartDashboard::PutNumber("red", detectedColor.red);
@@ -73,17 +70,32 @@ void Robot::RobotPeriodic() {
 void Robot::AutonomousInit() {
 	selectedAutoMode = autoModeChooser.GetSelected();
 	std::cout << "> BEGINNING " << selectedAutoMode << " AUTO MODE" << std::endl;
-}
 
-void Robot::AutonomousPeriodic() {
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
-		
+		std::vector<Command*> *commands = new std::vector<Command*> {
+			new MoveToPosition(&leftDrive, &rightDrive, 36, 36, GlobalConstants::PI, 0.1, 0.1)
+		};
+		autoScheduler = CommandScheduler(commands);
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
 	}
 	else {
-		std::cout << "> ERROR: " << selectedAutoMode << " IS NOT A VALID AUTO MODE" << std::endl;
+		std::cout << "ERROR > " << selectedAutoMode << " IS NOT A VALID AUTO MODE" << std::endl;
+	}
+}
+
+void Robot::AutonomousPeriodic() {
+	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
+		if (!autoScheduler.GetIsFinished()) {
+			autoScheduler.Run();
+		}
+	}
+	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
+
+	}
+	else {
+		std::cout << "ERROR > " << selectedAutoMode << " IS NOT A VALID AUTO MODE" << std::endl;
 	}
 }
 
@@ -96,10 +108,6 @@ void Robot::TeleopPeriodic() {
 void Robot::TestPeriodic() {}
 
 //END OVERRIDES
-
-
-
-
 
 void Robot::Drive() {
 	const double MAXIMUM_Y_SPEED_MULTIPLIER = 0.9;
@@ -152,66 +160,4 @@ void Robot::Drive() {
 	else {
 		differentialDrive.ArcadeDrive(joystick.GetY() * -ySpeedMultiplier, joystick.GetZ() * zSpeedMultiplier);
 	}
-	
-}
-
-void Robot::InitEncoders() {
-
-}
-
-void Robot::MoveToPosition(double x, double z, double finalAngle) {
-	const double TOLERANCE = 0.1;
-	const double P = 0;
-	const double I = 0;
-	const double D = 0;
-
-	frc2::PIDController pidController(P, I, D);
-
-	const double ANGLE_rad = (PI / 2) - atan2(z, x);
-	RotateToAngle(ANGLE_rad, &pidController, TOLERANCE);
-
-	const double LENGTH = sqrt(x * x + z * z);
-	MoveLength(LENGTH, &pidController, TOLERANCE);
-
-	RotateToAngle(-ANGLE_rad + finalAngle, &pidController, TOLERANCE);
-}
-
-void Robot::RotateToAngle(double angle, frc2::PIDController* pidController, double tolerance){
-	const double LEFT_START_DISTANCE_in = leftDriveEncoder.GetDistance();
-	const double RIGHT_START_DISTANCE_in = rightDriveEncoder.GetDistance();
-
-	const double ARC_LENGTH_in = 11 * angle;
-
-	while (true) {
-		const double LEFT_DELTA_DISTANCE_in = leftDriveEncoder.GetDistance() - LEFT_START_DISTANCE_in;
-		const double RIGHT_DELTA_DISTANCE_in = rightDriveEncoder.GetDistance() - RIGHT_START_DISTANCE_in;
-
-		if (abs(ARC_LENGTH_in - LEFT_DELTA_DISTANCE_in) < tolerance && abs(ARC_LENGTH_in - RIGHT_DELTA_DISTANCE_in) < tolerance) {
-			break;
-		}
-
-		const double LEFT_SPEED = pidController->Calculate(LEFT_DELTA_DISTANCE_in, ARC_LENGTH_in);
-		leftGroup.Set(-LEFT_SPEED);
-		const double RIGHT_SPEED = pidController->Calculate(RIGHT_DELTA_DISTANCE_in, ARC_LENGTH_in);
-		rightGroup.Set(RIGHT_SPEED);
-	}
-}
-
-void Robot::MoveLength(double length, frc2::PIDController* pidController, double tolerance){
-	const double LEFT_START_DISTANCE_in = leftDriveEncoder.GetDistance();
-	const double RIGHT_START_DISTANCE_in = rightDriveEncoder.GetDistance();
-
-	while (true) {
-		const double LEFT_DELTA_DISTANCE_in = leftDriveEncoder.GetDistance() - LEFT_START_DISTANCE_in;
-		const double RIGHT_DELTA_DISTANCE_in = rightDriveEncoder.GetDistance() - RIGHT_START_DISTANCE_in;
-		
-		if (abs(length - LEFT_DELTA_DISTANCE_in) < tolerance && abs(length - RIGHT_DELTA_DISTANCE_in) < tolerance) {
-			break;
-		}
-		const double LEFT_SPEED = pidController->Calculate(LEFT_DELTA_DISTANCE_in, length);
-		leftGroup.Set(LEFT_SPEED);
-
-		const double RIGHT_SPEED = pidController->Calculate(RIGHT_DELTA_DISTANCE_in, length);
-		rightGroup.Set(RIGHT_SPEED);		
-	}	
 }

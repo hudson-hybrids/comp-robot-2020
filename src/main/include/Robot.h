@@ -35,6 +35,10 @@
 #include "RobotMap.h"
 #include "JoystickMap.h"
 #include "command/Drive.h"
+#include "CommandScheduler.h"
+#include "command/MoveToPosition.h"
+#include "command/MoveLength.h"
+#include "command/RotateToAngle.h"
 
 using ctre::phoenix::motorcontrol::can::WPI_VictorSPX;
 
@@ -53,10 +57,10 @@ class Robot: public frc::TimedRobot {
 		WPI_VictorSPX frontRightMotor{RobotMap::FRONT_RIGHT_MOTOR};
 		WPI_VictorSPX backRightMotor{RobotMap::BACK_RIGHT_MOTOR};
 
-		frc::SpeedControllerGroup leftGroup{frontLeftMotor, backLeftMotor};
-		frc::SpeedControllerGroup rightGroup{frontRightMotor, backRightMotor};
+		frc::SpeedControllerGroup leftDrive{frontLeftMotor, backLeftMotor};
+		frc::SpeedControllerGroup rightDrive{frontRightMotor, backRightMotor};
 
-		frc::DifferentialDrive differentialDrive{leftGroup, rightGroup};
+		frc::DifferentialDrive differentialDrive{leftDrive, rightDrive};
 
 		frc::Joystick joystick{JoystickMap::JOYSTICK_ID};
 
@@ -74,10 +78,9 @@ class Robot: public frc::TimedRobot {
 		frc::DigitalOutput resetPin{RobotMap::PI_RESET_PIN};
 		frc::DigitalOutput lightPin{RobotMap::LIGHT_PIN};
 
+		CommandScheduler autoScheduler;
+
 		void Drive();
-		void MoveToPosition(double x, double z, double finalAngle);
-		void RotateToAngle(double angle, frc2::PIDController* pidController, double tolerance); 
-		void MoveLength(double length, frc2::PIDController* pidController, double tolerance);
 
 	public:
 		void RobotInit() override;

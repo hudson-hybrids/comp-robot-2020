@@ -1,8 +1,12 @@
+#pragma once
+
 class Command {
-	private:
+	protected:
 		bool isFinished = false;
 
 	public:
+		virtual ~Command();
+
 		bool GetIsFinished();
 		virtual void Run() = 0; 
 };

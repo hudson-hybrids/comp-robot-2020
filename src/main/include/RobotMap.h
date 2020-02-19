@@ -1,3 +1,5 @@
+#pragma once
+
 class RobotMap {
 	public:
 		const static int FRONT_RIGHT_MOTOR = 7;

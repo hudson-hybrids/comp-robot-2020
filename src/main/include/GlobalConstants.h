@@ -1,4 +1,6 @@
+#pragma once
+
 class GlobalConstants {
 	public:
-		const static double PI = 3.14159265;
+		constexpr static double PI = 3.14159265;
 };

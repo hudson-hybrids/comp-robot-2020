@@ -1,26 +1,27 @@
 #include "command/RotateToAngle.h"
 
-RotateToAngle::RotateToAngle(const double P, const double I, const double D) {
-	
-}
+RotateToAngle::RotateToAngle(frc::SpeedControllerGroup *leftDrive, frc::SpeedControllerGroup *rightDrive, const double ANGLE_rad, const double TOLERANCE_in): 
+Drive(leftDrive, rightDrive, TOLERANCE_in), 
+ANGLE_rad(ANGLE_rad) {}
 
-void RotateToAngle::Run() override {
-	const double LEFT_START_DISTANCE_in = leftDriveEncoder.GetDistance();
-	const double RIGHT_START_DISTANCE_in = rightDriveEncoder.GetDistance();
+void RotateToAngle::PerformManeuver() {
+	if (isFinished) {
+		std::cout << "WARNING > CALL TO Run ON FINISHED RotateToAngle" << std::endl;
+	}
+	else {
+		const double ARC_LENGTH_in = 11 * ANGLE_rad;
 
-	const double ARC_LENGTH_in = 11 * angle;
+		const double LEFT_DELTA_DISTANCE_in = leftDriveEncoder.GetDistance() - leftStartDistance_in;
+		const double RIGHT_DELTA_DISTANCE_in = rightDriveEncoder.GetDistance() - rightStartDistance_in;
 
-	while (true) {
-		const double LEFT_DELTA_DISTANCE_in = leftDriveEncoder.GetDistance() - LEFT_START_DISTANCE_in;
-		const double RIGHT_DELTA_DISTANCE_in = rightDriveEncoder.GetDistance() - RIGHT_START_DISTANCE_in;
+		const double LEFT_SPEED = pidController.Calculate(LEFT_DELTA_DISTANCE_in, ARC_LENGTH_in);
+		leftDrive->Set(-LEFT_SPEED);
+		
+		const double RIGHT_SPEED = pidController.Calculate(RIGHT_DELTA_DISTANCE_in, ARC_LENGTH_in);
+		rightDrive->Set(RIGHT_SPEED);
 
-		if (abs(ARC_LENGTH_in - LEFT_DELTA_DISTANCE_in) < tolerance && abs(ARC_LENGTH_in - RIGHT_DELTA_DISTANCE_in) < tolerance) {
-			break;
+		if (abs(ARC_LENGTH_in - LEFT_DELTA_DISTANCE_in) < TOLERANCE_in && abs(ARC_LENGTH_in - RIGHT_DELTA_DISTANCE_in) < TOLERANCE_in) {
+			isFinished = true;
 		}
-
-		const double LEFT_SPEED = pidController->Calculate(LEFT_DELTA_DISTANCE_in, ARC_LENGTH_in);
-		leftGroup.Set(-LEFT_SPEED);
-		const double RIGHT_SPEED = pidController->Calculate(RIGHT_DELTA_DISTANCE_in, ARC_LENGTH_in);
-		rightGroup.Set(RIGHT_SPEED);
 	}
 }
