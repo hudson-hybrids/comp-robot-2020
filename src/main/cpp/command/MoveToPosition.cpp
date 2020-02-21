@@ -20,6 +20,8 @@ const double ANGULAR_TOLERANCE_in) {
 	commandScheduler = CommandScheduler(commands);
 }
 
+MoveToPosition::MoveToPosition() {}
+
 void MoveToPosition::Run() {
 	if (isFinished) {
 		std::cout << "WARNING > CALL TO Run ON FINISHED MoveToPosition" << std::endl;

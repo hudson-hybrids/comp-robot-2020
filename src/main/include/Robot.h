@@ -39,6 +39,7 @@
 #include "command/MoveToPosition.h"
 #include "command/MoveLength.h"
 #include "command/RotateToAngle.h"
+#include "NetworkTablesManager.h"
 
 using ctre::phoenix::motorcontrol::can::WPI_VictorSPX;
 
@@ -66,9 +67,7 @@ class Robot: public frc::TimedRobot {
 
 		rev::ColorSensorV3 colorSensor{i2cPort};
 
-		nt::NetworkTableInstance ntInstance;
-		std::shared_ptr<NetworkTable> processingDataTable;
-        nt::NetworkTableEntry runPi;
+		NetworkTablesManager networkTablesManager;
 
 		double ySpeedMultiplier = 0.6;
 		double zSpeedMultiplier = 0.48;

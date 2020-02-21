@@ -23,6 +23,7 @@ class MoveToPosition: public Command {
 			const double LINEAR_TOLERANCE_in, 
 			const double ANGULAR_TOLERANCE_in
 		);
+		MoveToPosition();
 
 		void Run() override;
 };

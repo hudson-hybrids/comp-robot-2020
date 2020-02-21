@@ -73,7 +73,7 @@ void Robot::AutonomousInit() {
 
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
 		std::vector<Command*> *commands = new std::vector<Command*> {
-			new MoveToPosition(&leftDrive, &rightDrive, 36, 36, GlobalConstants::PI, 0.1, 0.1)
+			new RotateToAngle(&leftDrive, &rightDrive, GlobalConstants::PI / 2, 1)
 		};
 		autoScheduler = CommandScheduler(commands);
 	}
@@ -87,9 +87,11 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
+		/*
 		if (!autoScheduler.GetIsFinished()) {
 			autoScheduler.Run();
 		}
+		*/
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
