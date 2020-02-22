@@ -1,4 +1,5 @@
 #include "command/Drive.h"
+#include "Drivetrain.h"
 
 const double Drive::P = 0;
 const double Drive::I = 0;
@@ -22,10 +23,9 @@ frc::Encoder Drive::leftDriveEncoder(RobotMap::LEFT_DRIVE_ENCODER_A, RobotMap::L
 frc::Encoder Drive::rightDriveEncoder(RobotMap::RIGHT_DRIVE_ENCODER_A, RobotMap::RIGHT_DRIVE_ENCODER_B);
 bool Drive::encodersInitialized = false;
 
-Drive::Drive(frc::SpeedControllerGroup *leftDrive, frc::SpeedControllerGroup *rightDrive, const double TOLERANCE_in): 
+Drive::Drive(Drivetrain *drivetrain, const double TOLERANCE_in): 
 TOLERANCE_in(TOLERANCE_in) {
-	this->leftDrive = leftDrive;
-	this->rightDrive = rightDrive;
+	this->drivetrain = drivetrain;
 }
 
 void Drive::Run() {

@@ -8,6 +8,7 @@
 #include "command/MoveLength.h"
 #include "command/RotateToAngle.h"
 #include "CommandScheduler.h"
+#include "Drivetrain.h"
 
 class MoveToPosition: public Command {
 	private:
@@ -15,8 +16,7 @@ class MoveToPosition: public Command {
 
 	public:
 		MoveToPosition(
-			frc::SpeedControllerGroup *leftDrive, 
-			frc::SpeedControllerGroup *rightDrive, 
+			Drivetrain *drivetrain, 
 			const double X_in, 
 			const double Z_in, 
 			const double FINAL_ANGLE_rad, 

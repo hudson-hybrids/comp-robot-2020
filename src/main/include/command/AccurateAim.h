@@ -6,6 +6,7 @@
 #include "command/MoveToPosition.h"
 #include "NetworkTablesManager.h"
 #include "VisionProcessingData.h"
+#include "Drivetrain.h"
 
 class AccurateAim: public Command {
 	private:
@@ -14,8 +15,7 @@ class AccurateAim: public Command {
 	public:
 		AccurateAim(
 			NetworkTablesManager *networkTablesManager,
-			frc::SpeedControllerGroup *leftDrive, 
-			frc::SpeedControllerGroup *rightDrive,  
+			Drivetrain *drivetrain,  
 			const double LINEAR_TOLERANCE_in, 
 			const double ANGULAR_TOLERANCE_in
 		);

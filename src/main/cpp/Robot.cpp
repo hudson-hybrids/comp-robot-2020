@@ -73,7 +73,7 @@ void Robot::AutonomousInit() {
 
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
 		std::vector<Command*> *commands = new std::vector<Command*> {
-			new RotateToAngle(&leftDrive, &rightDrive, GlobalConstants::PI / 2, 1)
+			new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1)
 		};
 		autoScheduler = CommandScheduler(commands);
 	}
@@ -157,9 +157,9 @@ void Robot::Drive() {
 	}
 
 	if (joystick.GetRawAxis(JoystickMap::INVERT_AXIS_ID) <= 0) {
-		differentialDrive.ArcadeDrive(joystick.GetY() * ySpeedMultiplier, joystick.GetZ() * zSpeedMultiplier);
+		drivetrain.differentialDrive.ArcadeDrive(joystick.GetY() * ySpeedMultiplier, joystick.GetZ() * zSpeedMultiplier);
 	}
 	else {
-		differentialDrive.ArcadeDrive(joystick.GetY() * -ySpeedMultiplier, joystick.GetZ() * zSpeedMultiplier);
+		drivetrain.differentialDrive.ArcadeDrive(joystick.GetY() * -ySpeedMultiplier, joystick.GetZ() * zSpeedMultiplier);
 	}
 }

@@ -6,6 +6,7 @@
 
 #include "command/Command.h"
 #include "RobotMap.h"
+#include "Drivetrain.h"
 #include "GlobalConstants.h"
 
 class Drive: public Command {
@@ -25,16 +26,16 @@ class Drive: public Command {
 		static frc::Encoder rightDriveEncoder;
 		static bool encodersInitialized;
 
-		frc::SpeedControllerGroup *leftDrive;
-		frc::SpeedControllerGroup *rightDrive;
+		Drivetrain *drivetrain;
 
 		double leftStartDistance_in;
 		double rightStartDistance_in;
 
-		Drive(frc::SpeedControllerGroup *leftDrive, frc::SpeedControllerGroup *rightDrive, const double TOLERANCE_in);
+		Drive(Drivetrain *drivetrain, const double TOLERANCE_in);
 
 	public:
 		void Run() override;
 
 		virtual void PerformManeuver() = 0;
+		
 };

@@ -1,8 +1,7 @@
 #include "command/MoveToPosition.h"
 
 MoveToPosition::MoveToPosition(
-frc::SpeedControllerGroup *leftDrive, 
-frc::SpeedControllerGroup *rightDrive, 
+Drivetrain *drivetrain, 
 const double X_in, 
 const double Z_in, 
 const double FINAL_ANGLE_rad, 
@@ -12,9 +11,9 @@ const double ANGULAR_TOLERANCE_in) {
 	const double LENGTH = sqrt(X_in * X_in + X_in * X_in);
 	
 	std::vector<Command*> *commands = new std::vector<Command*> {
-		new RotateToAngle(leftDrive, rightDrive, ANGLE_rad, ANGULAR_TOLERANCE_in),
-		new MoveLength(leftDrive, rightDrive, LENGTH, LINEAR_TOLERANCE_in),
-		new RotateToAngle(leftDrive, rightDrive, -ANGLE_rad + FINAL_ANGLE_rad, ANGULAR_TOLERANCE_in)
+		new RotateToAngle(drivetrain, ANGLE_rad, ANGULAR_TOLERANCE_in),
+		new MoveLength(drivetrain, LENGTH, LINEAR_TOLERANCE_in),
+		new RotateToAngle(drivetrain, -ANGLE_rad + FINAL_ANGLE_rad, ANGULAR_TOLERANCE_in)
 	};
 
 	commandScheduler = CommandScheduler(commands);

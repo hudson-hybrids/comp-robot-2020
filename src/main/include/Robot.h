@@ -53,16 +53,7 @@ class Robot: public frc::TimedRobot {
 		frc::SendableChooser<std::string> autoModeChooser;
 		std::string selectedAutoMode;
 
-		WPI_VictorSPX frontLeftMotor{RobotMap::FRONT_LEFT_MOTOR};
-		WPI_VictorSPX backLeftMotor{RobotMap::BACK_LEFT_MOTOR};
-		WPI_VictorSPX frontRightMotor{RobotMap::FRONT_RIGHT_MOTOR};
-		WPI_VictorSPX backRightMotor{RobotMap::BACK_RIGHT_MOTOR};
-
-		frc::SpeedControllerGroup leftDrive{frontLeftMotor, backLeftMotor};
-		frc::SpeedControllerGroup rightDrive{frontRightMotor, backRightMotor};
-
-		frc::DifferentialDrive differentialDrive{leftDrive, rightDrive};
-
+		Drivetrain drivetrain;
 		frc::Joystick joystick{JoystickMap::JOYSTICK_ID};
 
 		rev::ColorSensorV3 colorSensor{i2cPort};
