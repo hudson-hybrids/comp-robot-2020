@@ -23,17 +23,15 @@ class GamepadMap {
 		const static int RIGHT_JOYSTICK_Y_AXIS_ID = 5;
 	
 	public:
-		//Function IDs
-			//Trigger/Shoulder IDs
-		const static int FLYWHEEL_BACK_AXIS_ID = RIGHT_TRIGGER_AXIS_ID;
+		//Button function IDs
 		const static int FLYWHEEL_FORWARD_BUTTON_ID = RIGHT_SHOULDER_BUTTON_ID;
-		const static int CONVEYOR_DOWN_AXIS_ID = LEFT_TRIGGER_AXIS_ID;
 		const static int CONVEYOR_UP_BUTTON_ID = LEFT_SHOULDER_BUTTON_ID;
-			//Joystick IDs
-		const static int HANG_ARM_ANGLE_AXIS_ID = RIGHT_JOYSTICK_Y_AXIS_ID;
-
-			//Letter Button IDs
 		const static int SHOOT_BUTTON_ID = Y_BUTTON_ID;
 		const static int ACCURATE_AIM_BUTTON_ID = X_BUTTON_ID;
 		const static int QUICK_AIM_BUTTON_ID = B_BUTTON_ID;
+
+		//Axis function IDs
+		const static int HANG_ARM_ANGLE_AXIS_ID = RIGHT_JOYSTICK_Y_AXIS_ID;
+		const static int FLYWHEEL_BACK_AXIS_ID = RIGHT_TRIGGER_AXIS_ID;
+		const static int CONVEYOR_DOWN_AXIS_ID = LEFT_TRIGGER_AXIS_ID;
 }

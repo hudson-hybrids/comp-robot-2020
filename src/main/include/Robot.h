@@ -54,6 +54,7 @@ class Robot: public frc::TimedRobot {
 		std::string selectedAutoMode;
 
 		Drivetrain drivetrain;
+		
 		frc::Joystick joystick{JoystickMap::JOYSTICK_ID};
 
 		rev::ColorSensorV3 colorSensor{i2cPort};
