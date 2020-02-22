@@ -34,23 +34,18 @@
 
 #include "RobotMap.h"
 #include "JoystickMap.h"
+#include "command/Drive.h"
+#include "CommandScheduler.h"
+#include "command/MoveToPosition.h"
+#include "command/MoveLength.h"
+#include "command/RotateToAngle.h"
+#include "NetworkTablesManager.h"
 
 using ctre::phoenix::motorcontrol::can::WPI_VictorSPX;
 
-class Robot : public frc::TimedRobot {
-	public:
-		void RobotInit() override;
-		void RobotPeriodic() override;
-		void AutonomousInit() override;
-		void AutonomousPeriodic() override;
-		void TeleopInit() override;
-		void TeleopPeriodic() override;
-		void TestPeriodic() override;
-
+class Robot: public frc::TimedRobot {
 	private:
 		static constexpr frc::I2C::Port i2cPort = frc::I2C::Port::kOnboard;
-
-		const double PI = 3.14159265;
 
 		const std::string DEFAULT_AUTO_MODE_NAME = "default";
 		const std::string CUSTOM_AUTO_MODE_NAME = "custom";
@@ -58,23 +53,13 @@ class Robot : public frc::TimedRobot {
 		frc::SendableChooser<std::string> autoModeChooser;
 		std::string selectedAutoMode;
 
-		WPI_VictorSPX frontLeftMotor{RobotMap::FRONT_LEFT_MOTOR};
-		WPI_VictorSPX backLeftMotor{RobotMap::BACK_LEFT_MOTOR};
-		WPI_VictorSPX frontRightMotor{RobotMap::FRONT_RIGHT_MOTOR};
-		WPI_VictorSPX backRightMotor{RobotMap::BACK_RIGHT_MOTOR};
-
-		frc::SpeedControllerGroup leftGroup{frontLeftMotor, backLeftMotor};
-		frc::SpeedControllerGroup rightGroup{frontRightMotor, backRightMotor};
-
-		frc::DifferentialDrive differentialDrive{leftGroup, rightGroup};
-
+		Drivetrain drivetrain;
+		
 		frc::Joystick joystick{JoystickMap::JOYSTICK_ID};
 
 		rev::ColorSensorV3 colorSensor{i2cPort};
 
-		nt::NetworkTableInstance ntInstance;
-		std::shared_ptr<NetworkTable> processingDataTable;
-        nt::NetworkTableEntry runPi;
+		NetworkTablesManager networkTablesManager;
 
 		double ySpeedMultiplier = 0.6;
 		double zSpeedMultiplier = 0.48;
@@ -84,12 +69,16 @@ class Robot : public frc::TimedRobot {
 		frc::DigitalOutput resetPin{RobotMap::PI_RESET_PIN};
 		frc::DigitalOutput lightPin{RobotMap::LIGHT_PIN};
 
-		frc::Encoder leftDriveEncoder{RobotMap::LEFT_DRIVE_ENCODER_A, RobotMap::LEFT_DRIVE_ENCODER_B};
-		frc::Encoder rightDriveEncoder{RobotMap::RIGHT_DRIVE_ENCODER_A, RobotMap::RIGHT_DRIVE_ENCODER_B};
+		CommandScheduler autoScheduler;
 
 		void Drive();
-		void InitEncoders();
-		void MoveToPosition(double x, double z, double finalAngle);
-		void RotateToAngle(double angle, frc2::PIDController* pidController, double tolerance); 
-		void MoveLength(double length, frc2::PIDController* pidController, double tolerance);
+
+	public:
+		void RobotInit() override;
+		void RobotPeriodic() override;
+		void AutonomousInit() override;
+		void AutonomousPeriodic() override;
+		void TeleopInit() override;
+		void TeleopPeriodic() override;
+		void TestPeriodic() override;
 };
