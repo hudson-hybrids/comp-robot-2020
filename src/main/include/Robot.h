@@ -41,6 +41,7 @@
 #include "command/MoveToPosition.h"
 #include "command/MoveLength.h"
 #include "command/RotateToAngle.h"
+#include "command/AccurateAim.h"
 #include "NetworkTablesManager.h"
 
 using ctre::phoenix::motorcontrol::can::WPI_VictorSPX;
@@ -83,16 +84,23 @@ class Robot: public frc::TimedRobot {
 		frc::DigitalOutput lightPin{RobotMap::LIGHT_PIN};
 
 		CommandScheduler autoScheduler;
-		CommandScheduler teleopScheduler;
 
-		bool extended = false;
+		RotateToAngle *testRotate = nullptr;
+		AccurateAim *accurateAim = nullptr;
 
-		void Drive();
+		bool hangPistonsExtended = false;
+		bool prevAccurateAimButtonPressed = false;
+		bool prevQuickAimButtonPressed = false;
+
+		void JoystickDrive();
+		void ControlDrive();
 		void ControlOuttake();
 		void ControlIntake();
 		void ControlConveyor();
 		void ControlHangPistons();
 		void ControlHangArm();
+		void PerformAccurateAim();
+		void PerformQuickAim();
 		void TestPID();
 		void TestController();
 

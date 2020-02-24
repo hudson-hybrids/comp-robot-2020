@@ -22,6 +22,8 @@ class RobotMap {
 		const static int LEFT_DRIVE_ENCODER_B = 3;
 		const static int RIGHT_DRIVE_ENCODER_A = 4;
 		const static int RIGHT_DRIVE_ENCODER_B = 5;
+		const static int HANG_ENCODER_A = 6;
+		const static int HANG_ENCODER_B = 7;
 
 		const static int HANG_SOLENOID_FORWARD = 0;
 		const static int HANG_SOLENOID_REVERSE = 3;

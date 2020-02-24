@@ -107,32 +107,27 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
-	Drive();
-	//ControlOuttake();
-	//ControlIntake();
-	//ControlConveyor();
-	//ControlHangPistons();
-	//ControlHangArm();
-	TestPID();
-
-	if (!teleopScheduler.GetIsFinished()) {
-		teleopScheduler.Run();
-	}
+	ControlDrive();
+	ControlOuttake();
+	ControlIntake();
+	ControlConveyor();
+	ControlHangPistons();
+	ControlHangArm();
 }
 
 void Robot::TestPeriodic() {}
 
 //END OVERRIDES
 
-void Robot::Drive() {
+void Robot::JoystickDrive() {
 	const double MAXIMUM_Y_SPEED_MULTIPLIER = 0.9;
 	const double MAXIMUM_Z_SPEED_MULTIPLIER = 0.72;
 
 	const double MINIMUM_Y_SPEED_MULTIPLIER = 0.48;
-	const double MINIMUM_Z_SPEED_MULTIPLIER = 0.35;
+	const double MINIMUM_Z_SPEED_MULTIPLIER = 0.4;
 
 	const double NORMAL_Y_SPEED_MULTIPLIER = 0.6;
-	const double NORMAL_Z_SPEED_MULTIPLIER = 0.55;
+	const double NORMAL_Z_SPEED_MULTIPLIER = 0.58;
 
 	const double ACCELERATION = 0.004;
 
@@ -177,6 +172,31 @@ void Robot::Drive() {
 	}
 }
 
+void Robot::ControlDrive() {
+	if (joystick.GetRawButton(JoystickMap::ACCURATE_AIM_BUTTON)) {
+		//PerformAccurateAim();
+		TestPID();
+		prevAccurateAimButtonPressed = true;
+	}
+	else {
+		prevAccurateAimButtonPressed = false;
+	}
+
+	if (joystick.GetRawButton(JoystickMap::QUICK_AIM_BUTTON)) {
+		if (!joystick.GetRawButton(JoystickMap::ACCURATE_AIM_BUTTON)) {
+			//PerformQuickAim();
+		}
+		prevQuickAimButtonPressed = true;
+	}
+	else {
+		prevQuickAimButtonPressed = false;
+	}
+
+	if (!joystick.GetRawButton(JoystickMap::ACCURATE_AIM_BUTTON) && !joystick.GetRawButton(JoystickMap::QUICK_AIM_BUTTON)) {
+		JoystickDrive();
+	}
+}
+
 void Robot::ControlOuttake() {
 	const double SPEED_MULTIPLIER = 1;
 	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
@@ -218,11 +238,11 @@ void Robot::ControlConveyor() {
 
 void Robot::ControlHangPistons() {
 	if (gamepad.GetPOV() == 0) {
-		extended = true;
+		hangPistonsExtended = true;
 		hangSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
 	}
 	else if (gamepad.GetPOV() == 180) {
-		extended = false;
+		hangPistonsExtended = false;
 		hangSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
 	}
 	else {
@@ -231,7 +251,7 @@ void Robot::ControlHangPistons() {
 }
 
 void Robot::ControlHangArm() {
-	double speed = extended ? 0.35 : 0.25;
+	double speed = hangPistonsExtended ? 0.35 : 0.25;
 	if (joystick.GetRawButton(JoystickMap::HANG_ARM_UP_BUTTON_ID)) {
 		hangMotor.Set(-speed);
 	}
@@ -243,10 +263,33 @@ void Robot::ControlHangArm() {
 	}
 }
 
+void Robot::PerformAccurateAim() {
+	if (!prevAccurateAimButtonPressed) {
+		if (accurateAim != nullptr) {
+			delete accurateAim;
+		}
+		accurateAim = new AccurateAim(&networkTablesManager, &drivetrain, 1, 1);
+	}
+
+	if (!accurateAim->GetIsFinished()) {
+		accurateAim->Run();
+	}
+}
+
+void Robot::PerformQuickAim() {
+
+}
+
 void Robot::TestPID() {
-	if (gamepad.GetRawButton(GamepadMap::ACCURATE_AIM_BUTTON_ID) && teleopScheduler.GetIsFinished()) {
-		RotateToAngle *testRotate = new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1);
-		teleopScheduler.AddCommand(testRotate);
+	if (!prevAccurateAimButtonPressed) {
+		if (testRotate != nullptr) {
+			delete testRotate;
+		}
+		testRotate = new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1);
+	}
+
+	if (!testRotate->GetIsFinished()) {
+		testRotate->Run();
 	}
 }
 

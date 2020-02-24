@@ -26,10 +26,14 @@ class Drive: public Command {
 		static frc::Encoder rightDriveEncoder;
 		static bool encodersInitialized;
 
+		static double leftDistance_in;
+		static double rightDistance_in;
+
 		Drivetrain *drivetrain;
 
 		double leftStartDistance_in;
 		double rightStartDistance_in;
+		bool startDistancesCalculated = false;
 
 		Drive(Drivetrain *drivetrain, const double TOLERANCE_in);
 

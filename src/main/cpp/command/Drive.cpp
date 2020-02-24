@@ -1,7 +1,7 @@
 #include "command/Drive.h"
 #include "Drivetrain.h"
 
-const double Drive::P = 0.017;
+const double Drive::P = 0;
 const double Drive::I = 0;
 const double Drive::D = 0;
 
@@ -19,18 +19,27 @@ frc2::PIDController Drive::pidController(P, I, D);
 frc::Encoder Drive::leftDriveEncoder(RobotMap::LEFT_DRIVE_ENCODER_A, RobotMap::LEFT_DRIVE_ENCODER_B);
 frc::Encoder Drive::rightDriveEncoder(RobotMap::RIGHT_DRIVE_ENCODER_A, RobotMap::RIGHT_DRIVE_ENCODER_B);
 bool Drive::encodersInitialized = false;
+double Drive::leftDistance_in = 0;
+double Drive::rightDistance_in = 0;
 
 Drive::Drive(Drivetrain *drivetrain, const double TOLERANCE_in): 
 TOLERANCE_in(TOLERANCE_in) {
 	this->drivetrain = drivetrain;
-	leftStartDistance_in = leftDriveEncoder.GetDistance();
-	rightStartDistance_in = -rightDriveEncoder.GetDistance();
-}
 
-void Drive::Run() {
 	if (!encodersInitialized) {
 		InitEncoders();
 		encodersInitialized = true;
+	}
+}
+
+void Drive::Run() {
+	Drive::leftDistance_in = leftDriveEncoder.GetDistance();
+	Drive::rightDistance_in = -rightDriveEncoder.GetDistance();
+
+	if (!startDistancesCalculated) {
+		leftStartDistance_in = leftDistance_in;
+		leftStartDistance_in = rightDistance_in;
+		startDistancesCalculated = true;
 	}
 
 	PerformManeuver();
