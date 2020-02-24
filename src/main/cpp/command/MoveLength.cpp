@@ -11,7 +11,7 @@ void MoveLength::PerformManeuver() {
 	}
 	else {
 		const double LEFT_DELTA_DISTANCE_in = leftDriveEncoder.GetDistance() - leftStartDistance_in;
-		const double RIGHT_DELTA_DISTANCE_in = rightDriveEncoder.GetDistance() - rightStartDistance_in;
+		const double RIGHT_DELTA_DISTANCE_in = -rightDriveEncoder.GetDistance() - rightStartDistance_in;
 		
 		const double LEFT_SPEED = pidController.Calculate(LEFT_DELTA_DISTANCE_in, LENGTH_in);
 		drivetrain->leftDrive.Set(LEFT_SPEED);
@@ -20,6 +20,8 @@ void MoveLength::PerformManeuver() {
 		drivetrain->rightDrive.Set(RIGHT_SPEED);
 
 		if (abs(LENGTH_in - LEFT_DELTA_DISTANCE_in) < TOLERANCE_in && abs(LENGTH_in - RIGHT_DELTA_DISTANCE_in) < TOLERANCE_in) {
+			drivetrain->leftDrive.Set(0);
+			drivetrain->rightDrive.Set(0);
 			isFinished = true;
 		}
 	}

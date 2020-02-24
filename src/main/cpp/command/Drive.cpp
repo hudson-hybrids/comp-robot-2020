@@ -1,7 +1,7 @@
 #include "command/Drive.h"
 #include "Drivetrain.h"
 
-const double Drive::P = 0;
+const double Drive::P = 0.017;
 const double Drive::I = 0;
 const double Drive::D = 0;
 
@@ -13,9 +13,6 @@ void Drive::InitEncoders() {
 
 	leftDriveEncoder.SetDistancePerPulse(DISTANCE_PER_PULSE);
 	rightDriveEncoder.SetDistancePerPulse(DISTANCE_PER_PULSE);
-
-	leftStartDistance_in = leftDriveEncoder.GetDistance();
-	rightStartDistance_in = rightDriveEncoder.GetDistance();
 }
 
 frc2::PIDController Drive::pidController(P, I, D);
@@ -26,11 +23,14 @@ bool Drive::encodersInitialized = false;
 Drive::Drive(Drivetrain *drivetrain, const double TOLERANCE_in): 
 TOLERANCE_in(TOLERANCE_in) {
 	this->drivetrain = drivetrain;
+	leftStartDistance_in = leftDriveEncoder.GetDistance();
+	rightStartDistance_in = -rightDriveEncoder.GetDistance();
 }
 
 void Drive::Run() {
 	if (!encodersInitialized) {
 		InitEncoders();
+		encodersInitialized = true;
 	}
 
 	PerformManeuver();

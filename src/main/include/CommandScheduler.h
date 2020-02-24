@@ -7,9 +7,11 @@
 
 class CommandScheduler {
 	private:
-		bool isFinished = false;
+		bool isFinished;
 		std::vector<Command*> *commands = nullptr;
 
+		void ClearCommandsContents();
+		void ClearCommands();
 		void ClearData();
 
 	public:
@@ -18,5 +20,6 @@ class CommandScheduler {
 		~CommandScheduler();
 		
 		void Run();
+		void AddCommand(Command *command);
 		bool GetIsFinished();
 };

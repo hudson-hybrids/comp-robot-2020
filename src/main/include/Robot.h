@@ -22,6 +22,7 @@
 #include <frc/DigitalOutput.h>
 #include <frc/Encoder.h>
 #include <frc/controller/PIDController.h>
+#include <frc/DoubleSolenoid.h>
 
 #include "networktables/NetworkTable.h"
 #include "networktables/NetworkTableEntry.h"
@@ -34,6 +35,7 @@
 
 #include "RobotMap.h"
 #include "JoystickMap.h"
+#include "GamepadMap.h"
 #include "command/Drive.h"
 #include "CommandScheduler.h"
 #include "command/MoveToPosition.h"
@@ -54,24 +56,45 @@ class Robot: public frc::TimedRobot {
 		std::string selectedAutoMode;
 
 		Drivetrain drivetrain;
-		
-		frc::Joystick joystick{JoystickMap::JOYSTICK_ID};
 
-		rev::ColorSensorV3 colorSensor{i2cPort};
+		WPI_VictorSPX outtakeMotor1{RobotMap::OUTTAKE_MOTOR_1};
+		WPI_VictorSPX outtakeMotor2{RobotMap::OUTTAKE_MOTOR_2};
+		WPI_VictorSPX hangMotor{RobotMap::HANG_MOTOR};
+		WPI_VictorSPX intakeMotor{RobotMap::INTAKE_MOTOR};
+		WPI_VictorSPX conveyorMotor{RobotMap::CONVEYOR_MOTOR};
+
+		frc::SpeedControllerGroup outtakeMotorGroup{outtakeMotor1, outtakeMotor2};
+
+		frc::Joystick joystick{JoystickMap::ID};
+		frc::Joystick gamepad{GamepadMap::ID};
+
+		//rev::ColorSensorV3 colorSensor{i2cPort};
 
 		NetworkTablesManager networkTablesManager;
+
+		frc::DoubleSolenoid hangSolenoid{RobotMap::HANG_SOLENOID_FORWARD, RobotMap::HANG_SOLENOID_REVERSE};
 
 		double ySpeedMultiplier = 0.6;
 		double zSpeedMultiplier = 0.48;
 
-		frc::AnalogInput topSonarSensor{RobotMap::TOP_SONAR_SENSOR};
-		frc::AnalogInput bottomSonarSensor{RobotMap::BOTTOM_SONAR_SENSOR};
+		//frc::AnalogInput topSonarSensor{RobotMap::TOP_SONAR_SENSOR};
+		//frc::AnalogInput bottomSonarSensor{RobotMap::BOTTOM_SONAR_SENSOR};
 		frc::DigitalOutput resetPin{RobotMap::PI_RESET_PIN};
 		frc::DigitalOutput lightPin{RobotMap::LIGHT_PIN};
 
 		CommandScheduler autoScheduler;
+		CommandScheduler teleopScheduler;
+
+		bool extended = false;
 
 		void Drive();
+		void ControlOuttake();
+		void ControlIntake();
+		void ControlConveyor();
+		void ControlHangPistons();
+		void ControlHangArm();
+		void TestPID();
+		void TestController();
 
 	public:
 		void RobotInit() override;

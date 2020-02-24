@@ -18,9 +18,12 @@ void Robot::RobotInit() {
 
 	frc::SmartDashboard::PutBoolean("reset_pin", false);
 	frc::SmartDashboard::PutBoolean("light_pin", true);
+
+	TestController();
 }
 
 void Robot::RobotPeriodic() {
+	/*
 	frc::Color blue = frc::Color(.12, .42, .45);
 	frc::Color green = frc::Color(.17, .57, .25);
 	frc::Color red = frc::Color(.52, .35, .13);
@@ -59,12 +62,14 @@ void Robot::RobotPeriodic() {
 
 	frc::SmartDashboard::PutNumber("distance_0", topSonarSensor.GetValue());
 	frc::SmartDashboard::PutNumber("distance_1", bottomSonarSensor.GetValue());
-
+	*/
 	bool resetPi = frc::SmartDashboard::GetBoolean("reset_pin", false);
 	resetPin.Set(resetPi); 
 
 	bool lightOn = frc::SmartDashboard::GetBoolean("light_pin", true);
 	lightPin.Set(lightOn);
+
+	TestController();
 }
 
 void Robot::AutonomousInit() {
@@ -87,11 +92,9 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
-		/*
 		if (!autoScheduler.GetIsFinished()) {
 			autoScheduler.Run();
 		}
-		*/
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
@@ -105,6 +108,16 @@ void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
 	Drive();
+	//ControlOuttake();
+	//ControlIntake();
+	//ControlConveyor();
+	//ControlHangPistons();
+	//ControlHangArm();
+	TestPID();
+
+	if (!teleopScheduler.GetIsFinished()) {
+		teleopScheduler.Run();
+	}
 }
 
 void Robot::TestPeriodic() {}
@@ -119,7 +132,7 @@ void Robot::Drive() {
 	const double MINIMUM_Z_SPEED_MULTIPLIER = 0.35;
 
 	const double NORMAL_Y_SPEED_MULTIPLIER = 0.6;
-	const double NORMAL_Z_SPEED_MULTIPLIER = 0.48;
+	const double NORMAL_Z_SPEED_MULTIPLIER = 0.55;
 
 	const double ACCELERATION = 0.004;
 
@@ -162,4 +175,90 @@ void Robot::Drive() {
 	else {
 		drivetrain.differentialDrive.ArcadeDrive(joystick.GetY() * -ySpeedMultiplier, joystick.GetZ() * zSpeedMultiplier);
 	}
+}
+
+void Robot::ControlOuttake() {
+	const double SPEED_MULTIPLIER = 1;
+	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
+	double speed = SPEED_MULTIPLIER * stickValue;
+	if (abs(stickValue) > 0.1) {
+		outtakeMotor1.Set(speed);
+		outtakeMotor2.Set(-speed);
+	}
+	else {
+		outtakeMotor1.Set(0);
+		outtakeMotor2.Set(0);
+	}
+}
+
+void Robot::ControlIntake() {
+	double triggerValue = gamepad.GetRawAxis(GamepadMap::INTAKE_OUT_TRIGGER_AXIS);
+	if (triggerValue > 0.1) {
+		intakeMotor.Set(0.3);
+	}
+	else if (gamepad.GetRawButton(GamepadMap::INTAKE_IN_BUTTON_ID)) {
+		intakeMotor.Set(-0.3);
+	}
+	else {
+		intakeMotor.Set(0);
+	}
+}
+
+void Robot::ControlConveyor() {
+	const double SPEED_MULTIPLIER = 0.3;
+	double stickValue = gamepad.GetRawAxis(GamepadMap::CONVEYOR_AXIS_ID);
+	double speed = SPEED_MULTIPLIER * stickValue;
+	if (abs(stickValue) > 0.1) {
+		conveyorMotor.Set(-speed);
+	}
+	else {
+		conveyorMotor.Set(0);
+	}
+}
+
+void Robot::ControlHangPistons() {
+	if (gamepad.GetPOV() == 0) {
+		extended = true;
+		hangSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+	}
+	else if (gamepad.GetPOV() == 180) {
+		extended = false;
+		hangSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+	}
+	else {
+		hangSolenoid.Set(frc::DoubleSolenoid::Value::kOff);
+	}
+}
+
+void Robot::ControlHangArm() {
+	double speed = extended ? 0.35 : 0.25;
+	if (joystick.GetRawButton(JoystickMap::HANG_ARM_UP_BUTTON_ID)) {
+		hangMotor.Set(-speed);
+	}
+	else if (joystick.GetRawButton(JoystickMap::HANG_ARM_DOWN_BUTTON_ID)) {
+		hangMotor.Set(speed);
+	}
+	else {
+		hangMotor.Set(0);
+	}
+}
+
+void Robot::TestPID() {
+	if (gamepad.GetRawButton(GamepadMap::ACCURATE_AIM_BUTTON_ID) && teleopScheduler.GetIsFinished()) {
+		RotateToAngle *testRotate = new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1);
+		teleopScheduler.AddCommand(testRotate);
+	}
+}
+
+void Robot::TestController() {
+	frc::SmartDashboard::PutBoolean("intake in", gamepad.GetRawButton(GamepadMap::INTAKE_IN_BUTTON_ID));
+	frc::SmartDashboard::PutBoolean("shoot", gamepad.GetRawButton(GamepadMap::SHOOT_BUTTON_ID));
+	frc::SmartDashboard::PutBoolean("accurate aim", gamepad.GetRawButton(GamepadMap::ACCURATE_AIM_BUTTON_ID));
+	frc::SmartDashboard::PutBoolean("quick aim", gamepad.GetRawButton(GamepadMap::QUICK_AIM_BUTTON_ID));
+
+	frc::SmartDashboard::PutNumber("outtake", gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID));
+	frc::SmartDashboard::PutNumber("conveyor", gamepad.GetRawAxis(GamepadMap::CONVEYOR_AXIS_ID));
+	frc::SmartDashboard::PutNumber("intake out", gamepad.GetRawAxis(GamepadMap::INTAKE_OUT_TRIGGER_AXIS));
+
+	frc::SmartDashboard::PutNumber("POV", gamepad.GetPOV());
 }
