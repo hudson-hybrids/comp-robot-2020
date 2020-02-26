@@ -6,10 +6,10 @@ class RobotMap {
 		const static int BACK_RIGHT_MOTOR = 0;
 		const static int FRONT_LEFT_MOTOR = 5;
 		const static int BACK_LEFT_MOTOR = 6;
-		const static int OUTTAKE_MOTOR_1 = 1;
-		const static int OUTTAKE_MOTOR_2 = 7;
+		const static int OUTTAKE_MOTOR_TALON = 9;
+		const static int OUTTAKE_MOTOR_VICTOR = 2;
 		const static int HANG_MOTOR = 9;
-		const static int INTAKE_MOTOR = 8;
+		const static int INTAKE_MOTOR = 1;
 		const static int CONVEYOR_MOTOR = 3;
 
 		const static int PI_RESET_PIN = 0;

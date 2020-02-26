@@ -61,8 +61,8 @@ class Robot: public frc::TimedRobot {
 
 		Drivetrain drivetrain;
 
-		can::WPI_TalonSRX outtakeMotor_Talon{RobotMap::OUTTAKE_MOTOR_1};
-		can::WPI_VictorSPX outtakeMotor_Victor{RobotMap::OUTTAKE_MOTOR_2};
+		can::WPI_TalonSRX outtakeMotor_Talon{RobotMap::OUTTAKE_MOTOR_TALON};
+		can::WPI_VictorSPX outtakeMotor_Victor{RobotMap::OUTTAKE_MOTOR_VICTOR};
 		can::WPI_VictorSPX hangMotor{RobotMap::HANG_MOTOR};
 		can::WPI_VictorSPX intakeMotor{RobotMap::INTAKE_MOTOR};
 		can::WPI_VictorSPX conveyorMotor{RobotMap::CONVEYOR_MOTOR};
@@ -84,7 +84,7 @@ class Robot: public frc::TimedRobot {
 		frc::DigitalOutput resetPin{RobotMap::PI_RESET_PIN};
 		frc::DigitalOutput lightPin{RobotMap::LIGHT_PIN};
 
-		CommandScheduler autoScheduler;
+		CommandScheduler *autoScheduler = nullptr;
 
 		RotateToAngle *testRotate = nullptr;
 		MoveLength *testMove = nullptr;

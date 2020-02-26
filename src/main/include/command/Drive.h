@@ -21,22 +21,11 @@ class Drive: public Command {
 
 		static frc2::PIDController pidController;
 
-		static double leftDistance_in;
-		static double rightDistance_in;
-
 		Drivetrain *drivetrain = nullptr;
-
-		double leftStartDistance_in;
-		double rightStartDistance_in;
-		bool startDistancesCalculated = false;
 
 		Drive(Drivetrain *drivetrain, const double TOLERANCE_in);
 
 	public:
-		void Run() override;
-
 		static void InitPID_SD();
 		static void ControlPID_SD();
-
-		virtual void PerformManeuver() = 0;
 };

@@ -99,7 +99,7 @@ void Robot::AutonomousInit() {
 		std::vector<Command*> *commands = new std::vector<Command*> {
 			new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1)
 		};
-		autoScheduler = CommandScheduler(commands);
+		autoScheduler = new CommandScheduler(commands);
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
@@ -111,8 +111,10 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
-		if (!autoScheduler.GetIsFinished()) {
-			autoScheduler.Run();
+		if (autoScheduler != nullptr) {
+			if (!autoScheduler->GetIsFinished()) {
+				autoScheduler->Run();
+			}
 		}
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
@@ -194,7 +196,7 @@ void Robot::JoystickDrive() {
 void Robot::ControlDrive() {
 	if (joystick.GetRawButton(JoystickMap::ACCURATE_AIM_BUTTON)) {
 		//PerformAccurateAim();
-		//TestRotatePID();
+		TestRotatePID();
 		prevAccurateAimButtonPressed = true;
 	}
 	else {
