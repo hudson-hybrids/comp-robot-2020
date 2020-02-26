@@ -6,15 +6,14 @@
 #include "VisionProcessingData.h"
 #include "Drivetrain.h"
 
-class AccurateAim: public Command {
+class QuickAim: public Command {
 	private:
-		MoveToPosition moveToPosition;
+		RotateToAngle *rotateToAngle;
 
 	public:
-		AccurateAim(
+		QuickAim(
 			NetworkTablesManager *networkTablesManager,
 			Drivetrain *drivetrain,  
-			const double LINEAR_TOLERANCE_in, 
 			const double ANGULAR_TOLERANCE_in
 		);
 

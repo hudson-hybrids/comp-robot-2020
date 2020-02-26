@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include <ctre/phoenix/motorcontrol/can/WPI_VictorSPX.h>
+#include <ctre/phoenix/motorcontrol/can/WPI_TalonSRX.h>
 
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
@@ -42,9 +43,11 @@
 #include "command/MoveLength.h"
 #include "command/RotateToAngle.h"
 #include "command/AccurateAim.h"
+#include "command/QuickAim.h"
+#include "command/SpinOuttake.h"
 #include "NetworkTablesManager.h"
 
-using ctre::phoenix::motorcontrol::can::WPI_VictorSPX;
+using namespace ctre::phoenix::motorcontrol;
 
 class Robot: public frc::TimedRobot {
 	private:
@@ -58,13 +61,11 @@ class Robot: public frc::TimedRobot {
 
 		Drivetrain drivetrain;
 
-		WPI_VictorSPX outtakeMotor1{RobotMap::OUTTAKE_MOTOR_1};
-		WPI_VictorSPX outtakeMotor2{RobotMap::OUTTAKE_MOTOR_2};
-		WPI_VictorSPX hangMotor{RobotMap::HANG_MOTOR};
-		WPI_VictorSPX intakeMotor{RobotMap::INTAKE_MOTOR};
-		WPI_VictorSPX conveyorMotor{RobotMap::CONVEYOR_MOTOR};
-
-		frc::SpeedControllerGroup outtakeMotorGroup{outtakeMotor1, outtakeMotor2};
+		can::WPI_TalonSRX outtakeMotor_Talon{RobotMap::OUTTAKE_MOTOR_1};
+		can::WPI_VictorSPX outtakeMotor_Victor{RobotMap::OUTTAKE_MOTOR_2};
+		can::WPI_VictorSPX hangMotor{RobotMap::HANG_MOTOR};
+		can::WPI_VictorSPX intakeMotor{RobotMap::INTAKE_MOTOR};
+		can::WPI_VictorSPX conveyorMotor{RobotMap::CONVEYOR_MOTOR};
 
 		frc::Joystick joystick{JoystickMap::ID};
 		frc::Joystick gamepad{GamepadMap::ID};
@@ -86,7 +87,10 @@ class Robot: public frc::TimedRobot {
 		CommandScheduler autoScheduler;
 
 		RotateToAngle *testRotate = nullptr;
+		MoveLength *testMove = nullptr;
 		AccurateAim *accurateAim = nullptr;
+		QuickAim *quickAim = nullptr;
+		SpinOuttake *spinOuttake = nullptr;
 
 		bool hangPistonsExtended = false;
 		bool prevAccurateAimButtonPressed = false;
@@ -101,7 +105,8 @@ class Robot: public frc::TimedRobot {
 		void ControlHangArm();
 		void PerformAccurateAim();
 		void PerformQuickAim();
-		void TestPID();
+		void TestRotatePID();
+		void TestMovePID();
 		void TestController();
 
 	public:

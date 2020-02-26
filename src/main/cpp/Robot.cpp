@@ -19,7 +19,26 @@ void Robot::RobotInit() {
 	frc::SmartDashboard::PutBoolean("reset_pin", false);
 	frc::SmartDashboard::PutBoolean("light_pin", true);
 
-	TestController();
+	frc::SmartDashboard::PutNumber("target_length", 0);
+	frc::SmartDashboard::PutNumber("left_distance", 0);
+	frc::SmartDashboard::PutNumber("right_distance", 0);
+
+	Drive::InitPID_SD();
+
+	const int TALON_TIMEOUT_MILLIS = 30;
+	const int OUTTAKE_ENCODER_ID = 0;
+	outtakeMotor_Talon.ConfigFactoryDefault();
+	outtakeMotor_Talon.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, OUTTAKE_ENCODER_ID, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.SetSensorPhase(true);
+	outtakeMotor_Talon.ConfigPeakOutputForward(1, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.ConfigPeakOutputReverse(-1, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.ConfigNominalOutputForward(0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.ConfigNominalOutputReverse(0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0.22, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.1097, TALON_TIMEOUT_MILLIS);
+	spinOuttake = new SpinOuttake(&outtakeMotor_Talon, &outtakeMotor_Victor);
 }
 
 void Robot::RobotPeriodic() {
@@ -69,12 +88,12 @@ void Robot::RobotPeriodic() {
 	bool lightOn = frc::SmartDashboard::GetBoolean("light_pin", true);
 	lightPin.Set(lightOn);
 
-	TestController();
+	Drive::ControlPID_SD();
 }
 
 void Robot::AutonomousInit() {
 	selectedAutoMode = autoModeChooser.GetSelected();
-	std::cout << "> BEGINNING " << selectedAutoMode << " AUTO MODE" << std::endl;
+	std::cout << "INFO > BEGINNING " << selectedAutoMode << " AUTO MODE" << std::endl;
 
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
 		std::vector<Command*> *commands = new std::vector<Command*> {
@@ -109,10 +128,10 @@ void Robot::TeleopInit() {}
 void Robot::TeleopPeriodic() {
 	ControlDrive();
 	ControlOuttake();
-	ControlIntake();
-	ControlConveyor();
-	ControlHangPistons();
-	ControlHangArm();
+	//ControlIntake();
+	//ControlConveyor();
+	//ControlHangPistons();
+	//ControlHangArm();
 }
 
 void Robot::TestPeriodic() {}
@@ -175,7 +194,7 @@ void Robot::JoystickDrive() {
 void Robot::ControlDrive() {
 	if (joystick.GetRawButton(JoystickMap::ACCURATE_AIM_BUTTON)) {
 		//PerformAccurateAim();
-		TestPID();
+		//TestRotatePID();
 		prevAccurateAimButtonPressed = true;
 	}
 	else {
@@ -185,6 +204,7 @@ void Robot::ControlDrive() {
 	if (joystick.GetRawButton(JoystickMap::QUICK_AIM_BUTTON)) {
 		if (!joystick.GetRawButton(JoystickMap::ACCURATE_AIM_BUTTON)) {
 			//PerformQuickAim();
+			TestMovePID();
 		}
 		prevQuickAimButtonPressed = true;
 	}
@@ -198,16 +218,17 @@ void Robot::ControlDrive() {
 }
 
 void Robot::ControlOuttake() {
-	const double SPEED_MULTIPLIER = 1;
 	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
-	double speed = SPEED_MULTIPLIER * stickValue;
-	if (abs(stickValue) > 0.1) {
-		outtakeMotor1.Set(speed);
-		outtakeMotor2.Set(-speed);
+	if (stickValue > 0.2) {
+		spinOuttake->SetSpeed(100);
+		spinOuttake->Run();
+	}
+	else if (stickValue < -0.2) {
+		spinOuttake->SetSpeed(-100);
+		spinOuttake->Run();
 	}
 	else {
-		outtakeMotor1.Set(0);
-		outtakeMotor2.Set(0);
+		spinOuttake->Stop();
 	}
 }
 
@@ -277,10 +298,19 @@ void Robot::PerformAccurateAim() {
 }
 
 void Robot::PerformQuickAim() {
+	if (!prevQuickAimButtonPressed) {
+		if (quickAim != nullptr) {
+			delete quickAim;
+		}
+		quickAim = new QuickAim(&networkTablesManager, &drivetrain, 1);
+	}
 
+	if (!quickAim->GetIsFinished()) {
+		quickAim->Run();
+	}
 }
 
-void Robot::TestPID() {
+void Robot::TestRotatePID() {
 	if (!prevAccurateAimButtonPressed) {
 		if (testRotate != nullptr) {
 			delete testRotate;
@@ -290,6 +320,19 @@ void Robot::TestPID() {
 
 	if (!testRotate->GetIsFinished()) {
 		testRotate->Run();
+	}
+}
+
+void Robot::TestMovePID() {
+	if (!prevQuickAimButtonPressed) {
+		if (testMove != nullptr) {
+			delete testMove;
+		}
+		testMove = new MoveLength(&drivetrain, 20, 1);
+	}
+
+	if (!testMove->GetIsFinished()) {
+		testMove->Run();
 	}
 }
 

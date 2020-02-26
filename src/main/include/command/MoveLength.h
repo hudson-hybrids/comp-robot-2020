@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <frc/smartdashboard/SmartDashboard.h>
+
 #include "command/Drive.h"
 #include "Drivetrain.h"
 

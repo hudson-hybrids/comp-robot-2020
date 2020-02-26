@@ -15,6 +15,10 @@ void RotateToAngle::PerformManeuver() {
 		const double LEFT_DELTA_DISTANCE_in = leftDistance_in - leftStartDistance_in;
 		const double RIGHT_DELTA_DISTANCE_in = rightDistance_in - rightStartDistance_in;
 
+		frc::SmartDashboard::PutNumber("target_length", ARC_LENGTH_in);
+		frc::SmartDashboard::PutNumber("left_distance", LEFT_DELTA_DISTANCE_in);
+		frc::SmartDashboard::PutNumber("right_distance", RIGHT_DELTA_DISTANCE_in);
+
 		const double LEFT_SPEED = pidController.Calculate(LEFT_DELTA_DISTANCE_in, ARC_LENGTH_in);
 		drivetrain->leftDrive.PIDWrite(LEFT_SPEED);
 		
