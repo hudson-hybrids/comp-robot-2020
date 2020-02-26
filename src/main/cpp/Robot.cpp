@@ -97,8 +97,12 @@ void Robot::AutonomousInit() {
 
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
 		std::vector<Command*> *commands = new std::vector<Command*> {
+			new MoveLength(&drivetrain, 30, 1),
 			new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1)
 		};
+		if (autoScheduler != nullptr) {
+			delete autoScheduler;
+		}
 		autoScheduler = new CommandScheduler(commands);
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {

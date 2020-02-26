@@ -12,7 +12,7 @@
 
 class MoveToPosition: public Command {
 	private:
-		CommandScheduler commandScheduler;
+		CommandScheduler *commandScheduler = nullptr;
 
 	public:
 		MoveToPosition(
@@ -24,6 +24,8 @@ class MoveToPosition: public Command {
 			const double ANGULAR_TOLERANCE_in
 		);
 		MoveToPosition();
+
+		~MoveToPosition();
 
 		void Run() override;
 };
