@@ -84,7 +84,7 @@ class Robot: public frc::TimedRobot {
 		frc::DigitalOutput resetPin{RobotMap::PI_RESET_PIN};
 		frc::DigitalOutput lightPin{RobotMap::LIGHT_PIN};
 
-		CommandScheduler *autoScheduler = nullptr;
+		CommandScheduler autoScheduler;
 
 		RotateToAngle *testRotate = nullptr;
 		MoveLength *testMove = nullptr;

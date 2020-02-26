@@ -38,6 +38,10 @@ void Robot::RobotInit() {
 	outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.1097, TALON_TIMEOUT_MILLIS);
+
+	if (spinOuttake != nullptr) {
+		delete spinOuttake;
+	}
 	spinOuttake = new SpinOuttake(&outtakeMotor_Talon, &outtakeMotor_Victor);
 }
 
@@ -99,7 +103,7 @@ void Robot::AutonomousInit() {
 		std::vector<Command*> *commands = new std::vector<Command*> {
 			new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1)
 		};
-		autoScheduler = new CommandScheduler(commands);
+		autoScheduler = CommandScheduler(commands);
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
@@ -111,10 +115,8 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
-		if (autoScheduler != nullptr) {
-			if (!autoScheduler->GetIsFinished()) {
-				autoScheduler->Run();
-			}
+		if (!autoScheduler.GetIsFinished()) {
+			autoScheduler.Run();
 		}
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
@@ -220,17 +222,19 @@ void Robot::ControlDrive() {
 }
 
 void Robot::ControlOuttake() {
-	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
-	if (stickValue > 0.2) {
-		spinOuttake->SetSpeed(100);
-		spinOuttake->Run();
-	}
-	else if (stickValue < -0.2) {
-		spinOuttake->SetSpeed(-100);
-		spinOuttake->Run();
-	}
-	else {
-		spinOuttake->Stop();
+	if (spinOuttake != nullptr) {
+		double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
+		if (stickValue > 0.2) {
+			spinOuttake->SetSpeed(100);
+			spinOuttake->Run();
+		}
+		else if (stickValue < -0.2) {
+			spinOuttake->SetSpeed(-100);
+			spinOuttake->Run();
+		}
+		else {
+			spinOuttake->Stop();
+		}
 	}
 }
 

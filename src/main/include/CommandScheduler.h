@@ -15,8 +15,8 @@ class CommandScheduler {
 		void ClearData();
 
 	public:
-		CommandScheduler();
 		CommandScheduler(std::vector<Command*> *commands);
+		CommandScheduler();
 		~CommandScheduler();
 		
 		void Run();

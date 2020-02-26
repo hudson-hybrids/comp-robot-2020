@@ -20,14 +20,13 @@ void CommandScheduler::ClearCommands() {
 	}
 }
 
-CommandScheduler::CommandScheduler() {
-	isFinished = true;
-	this->commands = new std::vector<Command*>;
-}
-
 CommandScheduler::CommandScheduler(std::vector<Command*> *commands) {
 	isFinished = false;
 	this->commands = commands;
+}
+
+CommandScheduler::CommandScheduler() {
+	isFinished = true;
 }
 
 CommandScheduler::~CommandScheduler() {
@@ -38,19 +37,25 @@ void CommandScheduler::Run() {
 	if (isFinished) {
 		std::cout << "WARNING > CALL TO Run ON FINISHED CommandScheduler" << std::endl;
 	}
-	for (unsigned int i = 0; i < commands->size(); i++) {
-		if (!(*commands)[i]->GetIsFinished()) {
-			(*commands)[i]->Run();
-			return;
+	else {
+		for (unsigned int i = 0; i < commands->size(); i++) {
+			if ((*commands)[i] != nullptr) {
+				if (!(*commands)[i]->GetIsFinished()) {
+					(*commands)[i]->Run();
+					return;
+				}
+			}
 		}
+		isFinished = true;
+		ClearCommandsContents();
 	}
-	isFinished = true;
-	ClearCommandsContents();
 }
 
 void CommandScheduler::AddCommand(Command *command) {
-	isFinished = false;
-	commands->push_back(command);
+	if (commands != nullptr) {
+		isFinished = false;
+		commands->push_back(command);
+	}
 }
 
 bool CommandScheduler::GetIsFinished() {
