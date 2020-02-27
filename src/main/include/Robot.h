@@ -46,6 +46,7 @@
 #include "command/QuickAim.h"
 #include "command/SpinOuttake.h"
 #include "NetworkTablesManager.h"
+#include "AutoControl.h"
 
 using namespace ctre::phoenix::motorcontrol;
 
@@ -75,7 +76,7 @@ class Robot: public frc::TimedRobot {
 		NetworkTablesManager networkTablesManager;
 
 		frc::DoubleSolenoid hangSolenoid{RobotMap::HANG_SOLENOID_FORWARD, RobotMap::HANG_SOLENOID_REVERSE};
-		frc::DoubleSolenoid intakeSolenoid{RobotMap::HANG_SOLENOID_FORWARD, RobotMap::INTAKE_SOLENOID_REVERSE};
+		frc::DoubleSolenoid intakeSolenoid{RobotMap::INTAKE_SOLENOID_FORWARD, RobotMap::INTAKE_SOLENOID_REVERSE};
 
 		double ySpeedMultiplier = 0.6;
 		double zSpeedMultiplier = 0.48;
@@ -107,6 +108,8 @@ class Robot: public frc::TimedRobot {
 		void ControlHangArm();
 		void PerformAccurateAim();
 		void PerformQuickAim();
+		void AutoMoveIntake();
+		void AutoMoveOuttake();
 		void TestRotatePID();
 		void TestMovePID();
 		void TestController();

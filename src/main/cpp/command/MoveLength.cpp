@@ -1,5 +1,4 @@
 #include "command/MoveLength.h"
-#include "Drivetrain.h"
 
 MoveLength::MoveLength(Drivetrain *drivetrain, const double LENGTH_in, const double TOLERANCE_in):
 Drive(drivetrain, TOLERANCE_in),

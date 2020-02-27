@@ -96,6 +96,7 @@ void Robot::AutonomousInit() {
 	std::cout << "INFO > BEGINNING " << selectedAutoMode << " AUTO MODE" << std::endl;
 
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
+		intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
 		std::vector<Command*> *commands = new std::vector<Command*> {
 			new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1)
 		};
@@ -116,6 +117,7 @@ void Robot::AutonomousPeriodic() {
 				autoScheduler->Run();
 			}
 		}
+		AutoMoveIntake();
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
@@ -321,6 +323,17 @@ void Robot::PerformQuickAim() {
 
 	if (!quickAim->GetIsFinished()) {
 		quickAim->Run();
+	}
+}
+
+void Robot::AutoMoveIntake() {
+	if (AutoControl::moveIntake) {
+		intakeMotor.Set(0.3);
+		conveyorMotor.Set(0.3);
+	}
+	else {
+		intakeMotor.Set(0);
+		conveyorMotor.Set(0);
 	}
 }
 
