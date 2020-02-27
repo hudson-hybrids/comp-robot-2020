@@ -16,19 +16,25 @@ const double ANGULAR_TOLERANCE_in) {
 		new RotateToAngle(drivetrain, -ANGLE_rad + FINAL_ANGLE_rad, ANGULAR_TOLERANCE_in)
 	};
 
-	commandScheduler = CommandScheduler(commands);
+	commandScheduler = new CommandScheduler(commands);
 }
 
 MoveToPosition::MoveToPosition() {}
+
+MoveToPosition::~MoveToPosition() {
+	if (commandScheduler != nullptr) {
+		delete commandScheduler;
+	}
+}
 
 void MoveToPosition::Run() {
 	if (isFinished) {
 		std::cout << "WARNING > CALL TO Run ON FINISHED MoveToPosition" << std::endl;
 	}
 	else {
-		commandScheduler.Run();
+		commandScheduler->Run();
 
-		if (commandScheduler.GetIsFinished()) {
+		if (commandScheduler->GetIsFinished()) {
 			isFinished = true;
 		}
 	}

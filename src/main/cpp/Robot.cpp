@@ -106,6 +106,9 @@ void Robot::AutonomousInit() {
 			new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1),
 			new MoveLength(&drivetrain, 30, 1)
 		};
+		if (autoScheduler != nullptr) {
+			delete autoScheduler;
+		}
 		autoScheduler = new CommandScheduler(commands);
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
