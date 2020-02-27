@@ -28,7 +28,9 @@ void MoveLength::Run() {
 		drivetrain->leftDrive.PIDWrite(LEFT_SPEED);
 
 		const double RIGHT_SPEED = pidController.Calculate(RIGHT_DELTA_DISTANCE_in, LENGTH_in);
-		drivetrain->rightDrive.Set(-drivetrain->leftDrive.Get());
+		drivetrain->rightDrive.PIDWrite(LEFT_SPEED);
+
+		frc::SmartDashboard::PutNumber("left_speed", LEFT_SPEED);
 
 		if (abs(LENGTH_in - LEFT_DELTA_DISTANCE_in) < TOLERANCE_in/* && abs(LENGTH_in - RIGHT_DELTA_DISTANCE_in) < TOLERANCE_in*/) {
 			drivetrain->leftDrive.Set(0);

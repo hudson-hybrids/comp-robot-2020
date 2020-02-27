@@ -7,6 +7,7 @@ void CommandScheduler::ClearCommandsContents() {
 		for (unsigned int i = 0; i < commands->size(); i++) {
 			if ((*commands)[0] != nullptr) {
 				delete (*commands)[0];
+				(*commands)[0] = nullptr;
 			}
 			commands->erase(commands->begin());
 		}
@@ -17,6 +18,7 @@ void CommandScheduler::ClearCommands() {
 	ClearCommandsContents();
 	if (commands != nullptr) {
 		delete commands;
+		commands = nullptr;
 	}
 }
 

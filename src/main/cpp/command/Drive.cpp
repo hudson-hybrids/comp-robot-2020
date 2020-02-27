@@ -16,6 +16,7 @@ void Drive::InitPID_SD() {
 	frc::SmartDashboard::PutNumber("drivetrain_P", P);
 	frc::SmartDashboard::PutNumber("drivetrain_I", I);
 	frc::SmartDashboard::PutNumber("drivetrain_D", D);
+	frc::SmartDashboard::PutNumber("left_speed", 0);
 }
 
 void Drive::ControlPID_SD() {

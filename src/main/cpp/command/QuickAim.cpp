@@ -22,6 +22,7 @@ void QuickAim::Run() {
 		if (rotateToAngle->GetIsFinished()) {
 			isFinished = true;
 			delete rotateToAngle;
+			rotateToAngle = nullptr;
 		}
 	}
 }

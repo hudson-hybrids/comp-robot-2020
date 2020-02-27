@@ -31,7 +31,9 @@ void RotateToAngle::Run() {
 		drivetrain->leftDrive.PIDWrite(LEFT_SPEED);
 		
 		const double RIGHT_SPEED = pidController.Calculate(RIGHT_DELTA_DISTANCE_in, ARC_LENGTH_in);
-		drivetrain->rightDrive.Set(drivetrain->leftDrive.Get());
+		drivetrain->rightDrive.PIDWrite(LEFT_SPEED);
+
+		frc::SmartDashboard::PutNumber("left_speed", LEFT_SPEED);
 		
 		if (abs(ARC_LENGTH_in - LEFT_DELTA_DISTANCE_in) < TOLERANCE_in/* && abs(ARC_LENGTH_in - RIGHT_DELTA_DISTANCE_in) < TOLERANCE_in*/) {
 			drivetrain->leftDrive.Set(0);

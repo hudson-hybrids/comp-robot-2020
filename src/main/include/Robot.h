@@ -57,6 +57,9 @@ class Robot: public frc::TimedRobot {
 		const std::string DEFAULT_AUTO_MODE_NAME = "default";
 		const std::string CUSTOM_AUTO_MODE_NAME = "custom";
 
+		const double OUTTAKE_SPEED = 10;
+		const double INTAKE_SPEED = 0.1;
+
 		frc::SendableChooser<std::string> autoModeChooser;
 		std::string selectedAutoMode;
 
