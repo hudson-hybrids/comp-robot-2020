@@ -19,6 +19,8 @@ class Drive: public Command {
 	protected:
 		const double TOLERANCE_in;
 
+		double numRunCycles = 0;
+
 		static frc2::PIDController pidController;
 
 		Drivetrain *drivetrain = nullptr;

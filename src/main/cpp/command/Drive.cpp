@@ -2,7 +2,7 @@
 #include "Drivetrain.h"
 
 double Drive::P = 0.015;
-double Drive::I = 0;
+double Drive::I = 0.0001;
 double Drive::D = 0;
 
 frc2::PIDController Drive::pidController(P, I, D);

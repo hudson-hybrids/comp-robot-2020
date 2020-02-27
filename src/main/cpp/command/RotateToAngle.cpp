@@ -40,5 +40,11 @@ void RotateToAngle::Run() {
 			drivetrain->rightDrive.Set(0);
 			isFinished = true;
 		}
+		else if (abs(drivetrain->leftEncoder.GetRate()) < 0.01 && numRunCycles > 5) {
+			drivetrain->leftDrive.Set(0);
+			drivetrain->rightDrive.Set(0);
+			isFinished = true;
+		}
 	}
+	numRunCycles++;
 }

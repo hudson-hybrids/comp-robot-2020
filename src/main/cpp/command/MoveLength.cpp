@@ -31,11 +31,17 @@ void MoveLength::Run() {
 		drivetrain->rightDrive.PIDWrite(LEFT_SPEED);
 
 		frc::SmartDashboard::PutNumber("left_speed", LEFT_SPEED);
-
+ 
 		if (abs(LENGTH_in - LEFT_DELTA_DISTANCE_in) < TOLERANCE_in/* && abs(LENGTH_in - RIGHT_DELTA_DISTANCE_in) < TOLERANCE_in*/) {
 			drivetrain->leftDrive.Set(0);
 			drivetrain->rightDrive.Set(0);
 			isFinished = true;
 		}
+		else if (abs(drivetrain->leftEncoder.GetRate()) < 0.01 && numRunCycles > 5) {
+			drivetrain->leftDrive.Set(0);
+			drivetrain->rightDrive.Set(0);
+			isFinished = true;
+		}
 	}
+	numRunCycles++;
 }

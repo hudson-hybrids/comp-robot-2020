@@ -8,7 +8,7 @@
 
 class AccurateAim: public Command {
 	private:
-		MoveToPosition moveToPosition;
+		MoveToPosition *moveToPosition = nullptr;
 
 	public:
 		AccurateAim(
@@ -17,6 +17,8 @@ class AccurateAim: public Command {
 			const double LINEAR_TOLERANCE_in, 
 			const double ANGULAR_TOLERANCE_in
 		);
+
+		~AccurateAim();
 
 		void Run() override;
 };

@@ -103,8 +103,7 @@ void Robot::AutonomousInit() {
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
 		intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
 		std::vector<Command*> *commands = new std::vector<Command*> {
-			new RotateToAngle(&drivetrain, GlobalConstants::PI / 2, 1),
-			new MoveLength(&drivetrain, 30, 1)
+			new MoveToPosition(&drivetrain, 30, 30, 0, 1, 1)
 		};
 		if (autoScheduler != nullptr) {
 			delete autoScheduler;

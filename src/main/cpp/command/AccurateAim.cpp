@@ -13,7 +13,7 @@ AccurateAim::AccurateAim(NetworkTablesManager *networkTablesManager, Drivetrain 
 	const double X_DISPLACEMENT = VISION_DATA_TO_INCHES * (IDEAL_SHOOTING_X_TRANSLATION - visionProcessingData.ROBOT_X_TRANSLATION);
 	const double Z_DISPLACEMENT = VISION_DATA_TO_INCHES * (IDEAL_SHOOTING_Z_TRANSLATION - visionProcessingData.ROBOT_Z_TRANSLATION);
 
-	moveToPosition = MoveToPosition(
+	moveToPosition = new MoveToPosition(
 		drivetrain, 
 		X_DISPLACEMENT,
 		Z_DISPLACEMENT,
@@ -23,14 +23,18 @@ AccurateAim::AccurateAim(NetworkTablesManager *networkTablesManager, Drivetrain 
 	);
 }
 
+AccurateAim::~AccurateAim() {
+	delete moveToPosition;
+}
+
 void AccurateAim::Run() {
 	if (isFinished) {
 		std::cout << "WARNING > CALL TO Run ON FINISHED AccurateAim" << std::endl;
 	}
 	else {
-		moveToPosition.Run();
+		moveToPosition->Run();
 
-		if (moveToPosition.GetIsFinished()) {
+		if (moveToPosition->GetIsFinished()) {
 			isFinished = true;
 		}
 	}
