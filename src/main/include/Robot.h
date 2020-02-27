@@ -64,8 +64,9 @@ class Robot: public frc::TimedRobot {
 
 		can::WPI_TalonSRX outtakeMotor_Talon{RobotMap::OUTTAKE_MOTOR_TALON};
 		can::WPI_VictorSPX outtakeMotor_Victor{RobotMap::OUTTAKE_MOTOR_VICTOR};
-		can::WPI_VictorSPX hangMotor{RobotMap::HANG_MOTOR};
+		can::WPI_VictorSPX hangMotor{RobotMap::HANG_ARM_MOTOR};
 		can::WPI_VictorSPX intakeMotor{RobotMap::INTAKE_MOTOR};
+		can::WPI_VictorSPX hangPullMotor{RobotMap::HANG_PULL_MOTOR};
 		can::WPI_VictorSPX conveyorMotor{RobotMap::CONVEYOR_MOTOR};
 
 		frc::Joystick joystick{JoystickMap::ID};
