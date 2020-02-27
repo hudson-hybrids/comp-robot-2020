@@ -14,7 +14,7 @@
 
 using namespace ctre::phoenix::motorcontrol;
 
-class SpinOuttake: Command {
+class SpinOuttake: public Command {
 	private:
 		double targetSpeed_unitsPer100ms = 0;
 		bool timerStarted = false;
@@ -28,6 +28,7 @@ class SpinOuttake: Command {
 		SpinOuttake(can::WPI_TalonSRX *outtakeMotor_Talon, can::WPI_VictorSPX *outtakeMotor_Victor, double targetSpeed_RPM);
 
 		void SetSpeed(double targetSpeed_RPM);
+		void ResetTimer();
 		void Run() override;
 		void Stop();
 };

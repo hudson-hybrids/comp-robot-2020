@@ -97,6 +97,7 @@ class Robot: public frc::TimedRobot {
 		bool hangPistonsExtended = false;
 		bool prevAccurateAimButtonPressed = false;
 		bool prevQuickAimButtonPressed = false;
+		bool prevShootButtonPressed = false;
 
 		void JoystickDrive();
 		void ControlDrive();
@@ -106,6 +107,7 @@ class Robot: public frc::TimedRobot {
 		void ControlConveyor();
 		void ControlHangPistons();
 		void ControlHangArm();
+		void ControlShoot();
 		void PerformAccurateAim();
 		void PerformQuickAim();
 		void AutoMoveIntake();

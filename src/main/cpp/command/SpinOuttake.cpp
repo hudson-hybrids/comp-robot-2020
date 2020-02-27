@@ -12,8 +12,14 @@ SpinOuttake::SpinOuttake(can::WPI_TalonSRX *outtakeMotor_Talon, can::WPI_VictorS
 }
 
 void SpinOuttake::SetSpeed(double targetSpeed_RPM) {
-	timer.Reset();
+	ResetTimer();
 	targetSpeed_unitsPer100ms = targetSpeed_RPM * 4096 / 600;
+}
+
+void SpinOuttake::ResetTimer() {
+	timer.Reset();
+	timer.Stop();
+	timerStarted = false;
 }
 
 void SpinOuttake::Run() {
@@ -24,9 +30,9 @@ void SpinOuttake::Run() {
 
 	outtakeMotor_Talon->Set(ControlMode::Velocity, targetSpeed_unitsPer100ms);
 	double talonCurrent = outtakeMotor_Talon->GetOutputCurrent();
-	outtakeMotor_Victor->Set(ControlMode::Current, talonCurrent);
+	outtakeMotor_Victor->Set(ControlMode::Current, -talonCurrent);
 
-	if (timer.Get() > 4000) {
+	if (timer.Get() > 3000) {
 		isFinished = true;
 	}
 }

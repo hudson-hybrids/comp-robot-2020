@@ -300,6 +300,24 @@ void Robot::ControlHangArm() {
 	}
 }
 
+void Robot::ControlShoot() {
+	if (gamepad.GetRawButton(GamepadMap::SHOOT_BUTTON_ID)) {
+		if (!prevShootButtonPressed) {
+			spinOuttake->SetSpeed(60);
+		}
+		else {
+			if (spinOuttake->GetIsFinished()) {
+				conveyorMotor.Set(0.3);
+			}
+		}
+		prevShootButtonPressed = true;
+	}
+	else {
+		spinOuttake->Stop();
+		prevShootButtonPressed = false;
+	}
+}
+
 void Robot::PerformAccurateAim() {
 	if (!prevAccurateAimButtonPressed) {
 		if (accurateAim != nullptr) {
