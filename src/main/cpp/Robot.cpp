@@ -247,6 +247,18 @@ void Robot::ControlIntake() {
 	}
 }
 
+void Robot::ControlIntakePistons() {
+	if (gamepad.GetPOV() == 90) {
+		intakeSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
+	}
+	else if (gamepad.GetPOV() == 270) {
+		intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+	}
+	else {
+		intakeSolenoid.Set(frc::DoubleSolenoid::Value::kOff);
+	}
+}
+
 void Robot::ControlConveyor() {
 	const double SPEED_MULTIPLIER = 0.3;
 	double stickValue = gamepad.GetRawAxis(GamepadMap::CONVEYOR_AXIS_ID);

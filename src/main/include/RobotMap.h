@@ -27,4 +27,6 @@ class RobotMap {
 
 		const static int HANG_SOLENOID_FORWARD = 0;
 		const static int HANG_SOLENOID_REVERSE = 3;
+		const static int INTAKE_SOLENOID_FORWARD = -1;
+		const static int INTAKE_SOLENOID_REVERSE = -1;
 };

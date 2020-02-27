@@ -75,6 +75,7 @@ class Robot: public frc::TimedRobot {
 		NetworkTablesManager networkTablesManager;
 
 		frc::DoubleSolenoid hangSolenoid{RobotMap::HANG_SOLENOID_FORWARD, RobotMap::HANG_SOLENOID_REVERSE};
+		frc::DoubleSolenoid intakeSolenoid{RobotMap::HANG_SOLENOID_FORWARD, RobotMap::INTAKE_SOLENOID_REVERSE};
 
 		double ySpeedMultiplier = 0.6;
 		double zSpeedMultiplier = 0.48;
@@ -100,6 +101,7 @@ class Robot: public frc::TimedRobot {
 		void ControlDrive();
 		void ControlOuttake();
 		void ControlIntake();
+		void ControlIntakePistons();
 		void ControlConveyor();
 		void ControlHangPistons();
 		void ControlHangArm();
