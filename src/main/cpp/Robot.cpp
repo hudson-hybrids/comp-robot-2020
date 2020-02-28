@@ -228,7 +228,7 @@ void Robot::ControlDrive() {
 
 void Robot::ControlOuttake() {
 	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
-	if (abs(stickValue) > 0.1) {
+	if (abs(stickValue) > 0.06) {
 		SpinOuttake::Run(&outtakeMotor_Talon, &outtakeMotor_Victor, maxOuttakeSpeed * stickValue);
 	}
 	else {
