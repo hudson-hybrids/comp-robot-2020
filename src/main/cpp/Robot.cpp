@@ -33,15 +33,15 @@ void Robot::RobotInit() {
 	const int OUTTAKE_ENCODER_ID = 0;
 	outtakeMotor_Talon.ConfigFactoryDefault();
 	outtakeMotor_Talon.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, OUTTAKE_ENCODER_ID, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.SetSensorPhase(true);
+	outtakeMotor_Talon.SetSensorPhase(true);
 	outtakeMotor_Talon.ConfigPeakOutputForward(1, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigPeakOutputReverse(-1, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigNominalOutputForward(0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigNominalOutputReverse(0, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.1, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.2, TALON_TIMEOUT_MILLIS);
 }
 
 void Robot::RobotPeriodic() {

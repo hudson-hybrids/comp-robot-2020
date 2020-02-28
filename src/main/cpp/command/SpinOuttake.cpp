@@ -5,10 +5,10 @@ void SpinOuttake::Run(can::WPI_TalonSRX *outtakeMotor_Talon, can::WPI_VictorSPX 
 	frc::SmartDashboard::PutNumber("target_outtake_velocity", targetSpeed_unitsPer100ms);
 
 	//outtakeMotor_Talon->SetInverted(false);
-	outtakeMotor_Talon->Set(ControlMode::PercentOutput, targetSpeed_unitsPer100ms);
-	outtakeMotor_Victor->Set(ControlMode::PercentOutput, -targetSpeed_unitsPer100ms);
-	//outtakeMotor_Victor->SetInverted(InvertType::OpposeMaster);
-	//outtakeMotor_Victor->Follow(*outtakeMotor_Talon);
+	outtakeMotor_Talon->Set(ControlMode::Velocity, targetSpeed_unitsPer100ms);
+	//outtakeMotor_Victor->Set(ControlMode::PercentOutput, -outtakeMotor_Talon->GetMotorOutputPercent);
+	outtakeMotor_Victor->SetInverted(InvertType::OpposeMaster);
+	outtakeMotor_Victor->Follow(*outtakeMotor_Talon);
 }
 
 void SpinOuttake::Stop(can::WPI_TalonSRX *outtakeMotor_Talon, can::WPI_VictorSPX *outtakeMotor_Victor) {
