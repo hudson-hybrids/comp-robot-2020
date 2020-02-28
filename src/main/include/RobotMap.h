@@ -9,7 +9,8 @@ class RobotMap {
 		const static int OUTTAKE_MOTOR_TALON = 9;
 		const static int OUTTAKE_MOTOR_VICTOR = 2;
 		const static int HANG_ARM_MOTOR = 9;
-		const static int HANG_PULL_MOTOR = 3;
+		const static int HANG_PULL_MOTOR_1 = 3;
+		const static int HANG_PULL_MOTOR_2 = 10;
 		const static int INTAKE_MOTOR = 1;
 		const static int CONVEYOR_MOTOR = 8;
 

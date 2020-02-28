@@ -19,6 +19,8 @@ void Robot::RobotInit() {
 	frc::SmartDashboard::PutBoolean("reset_pin", false);
 	frc::SmartDashboard::PutBoolean("light_pin", true);
 
+	frc::SmartDashboard::PutBoolean("lock_arm", false);
+
 	frc::SmartDashboard::PutNumber("target_length", 0);
 	frc::SmartDashboard::PutNumber("left_distance", 0);
 	frc::SmartDashboard::PutNumber("right_distance", 0);
@@ -34,11 +36,10 @@ void Robot::RobotInit() {
 	outtakeMotor_Talon.ConfigPeakOutputReverse(-1, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigNominalOutputForward(0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigNominalOutputReverse(0, TALON_TIMEOUT_MILLIS);
-	outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0.22, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.1097, TALON_TIMEOUT_MILLIS);
-	spinOuttake = new SpinOuttake(&outtakeMotor_Talon, &outtakeMotor_Victor);
+	outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.2, TALON_TIMEOUT_MILLIS);
 }
 
 void Robot::RobotPeriodic() {
@@ -95,20 +96,8 @@ void Robot::AutonomousInit() {
 	selectedAutoMode = autoModeChooser.GetSelected();
 	std::cout << "INFO > BEGINNING " << selectedAutoMode << " AUTO MODE" << std::endl;
 
-	if (autoScheduler != nullptr) {
-		delete autoScheduler;
-		autoScheduler = nullptr;
-	}
-
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
-		intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
-		std::vector<Command*> *commands = new std::vector<Command*> {
-			new MoveToPosition(&drivetrain, 30, 30, 0, 1, 1)
-		};
-		if (autoScheduler != nullptr) {
-			delete autoScheduler;
-		}
-		autoScheduler = new CommandScheduler(commands);
+		PerformUntestedAutoInit();
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
@@ -120,12 +109,7 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
-		if (autoScheduler != nullptr) {
-			if (!autoScheduler->GetIsFinished()) {
-				autoScheduler->Run();
-			}
-		}
-		AutoMoveIntake();
+		PerformUntestedAutoPeriodic();
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
@@ -135,7 +119,16 @@ void Robot::AutonomousPeriodic() {
 	}
 }
 
-void Robot::TeleopInit() {}
+void Robot::TeleopInit() {
+	intakeMotor.Set(0);
+	conveyorMotor.Set(0);
+
+	if (spinOuttake != nullptr) {
+		delete spinOuttake;
+		spinOuttake = nullptr;
+	}
+	spinOuttake = new SpinOuttake(&outtakeMotor_Talon, &outtakeMotor_Victor);
+}
 
 void Robot::TeleopPeriodic() {
 	ControlDrive();
@@ -143,8 +136,9 @@ void Robot::TeleopPeriodic() {
 	ControlIntake();
 	ControlConveyor();
 	ControlIntakePistons();
-	//ControlHangPistons();
-	//ControlHangArm();
+	ControlHangPull();
+	ControlHangPistons();
+	ControlHangArm();
 }
 
 void Robot::TestPeriodic() {}
@@ -232,16 +226,18 @@ void Robot::ControlDrive() {
 
 void Robot::ControlOuttake() {
 	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
-	if (stickValue > 0.2) {
-		spinOuttake->SetSpeed(OUTTAKE_SPEED);
-		spinOuttake->Run();
-	}
-	else if (stickValue < -0.2) {
-		spinOuttake->SetSpeed(-OUTTAKE_SPEED);
-		spinOuttake->Run();
-	}
-	else {
-		spinOuttake->Stop();
+	if (spinOuttake != nullptr) {
+		if (stickValue > 0.2) {
+			spinOuttake->SetSpeed(MAX_OUTTAKE_SPEED * stickValue);
+			spinOuttake->Run();
+		}
+		else if (stickValue < -0.2) {
+			spinOuttake->SetSpeed(MAX_OUTTAKE_SPEED * stickValue);
+			spinOuttake->Run();
+		}
+		else {
+			spinOuttake->Stop();
+		}
 	}
 }
 
@@ -271,11 +267,11 @@ void Robot::ControlIntakePistons() {
 }
 
 void Robot::ControlConveyor() {
-	const double SPEED_MULTIPLIER = 0.3;
-	double stickValue = gamepad.GetRawAxis(GamepadMap::CONVEYOR_AXIS_ID);
-	double speed = SPEED_MULTIPLIER * stickValue;
-	if (abs(stickValue) > 0.1) {
-		conveyorMotor.Set(-speed);
+	if (gamepad.GetPOV() == 0) {
+		conveyorMotor.Set(-CONVEYOR_SPEED);
+	}
+	else if (gamepad.GetPOV() == 180) {
+		conveyorMotor.Set(CONVEYOR_SPEED);
 	}
 	else {
 		conveyorMotor.Set(0);
@@ -283,12 +279,10 @@ void Robot::ControlConveyor() {
 }
 
 void Robot::ControlHangPistons() {
-	if (gamepad.GetPOV() == 0) {
-		hangPistonsExtended = true;
+	if (joystick.GetRawButton(JoystickMap::HANG_SOLENOID_FORWARD_BUTTON_ID)) {
 		hangSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
 	}
-	else if (gamepad.GetPOV() == 180) {
-		hangPistonsExtended = false;
+	else if (joystick.GetRawButton(JoystickMap::HANG_SOLENOID_REVERSE_BUTTON_ID)) {
 		hangSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
 	}
 	else {
@@ -297,22 +291,34 @@ void Robot::ControlHangPistons() {
 }
 
 void Robot::ControlHangArm() {
-	double speed = hangPistonsExtended ? 0.35 : 0.25;
-	if (joystick.GetRawButton(JoystickMap::HANG_ARM_UP_BUTTON_ID)) {
-		hangMotor.Set(-speed);
-	}
-	else if (joystick.GetRawButton(JoystickMap::HANG_ARM_DOWN_BUTTON_ID)) {
-		hangMotor.Set(speed);
+	double speed = gamepad.GetRawAxis(GamepadMap::HANG_ARM_AXIS_ID);
+	if (abs(speed) > 0.1) {
+		hangMotor.Set(speed * MAX_HANG_ARM_SPEED);
 	}
 	else {
-		hangMotor.Set(0);
+		hangMotor.Set(-0.1);
+	}
+}
+
+void Robot::ControlHangPull() {
+	if (joystick.GetRawButton(JoystickMap::PULL_HANG_BUTTON_ID)) {
+		hangPullMotor1.Set(1.0);
+		hangPullMotor2.Set(1.0);
+	}
+	else if (joystick.GetRawButton(JoystickMap::PUSH_HANG_BUTTON_ID)) {
+		hangPullMotor1.Set(-1.0);
+		hangPullMotor2.Set(-1.0);
+	}
+	else {
+		hangPullMotor1.Set(0);
+		hangPullMotor2.Set(0);
 	}
 }
 
 void Robot::ControlShoot() {
 	if (gamepad.GetRawButton(GamepadMap::SHOOT_BUTTON_ID)) {
 		if (!prevShootButtonPressed) {
-			spinOuttake->SetSpeed(OUTTAKE_SPEED);
+			spinOuttake->SetSpeed(MAX_OUTTAKE_SPEED);
 		}
 		else {
 			if (spinOuttake->GetIsFinished()) {
@@ -358,7 +364,7 @@ void Robot::PerformQuickAim() {
 void Robot::AutoMoveIntake() {
 	if (AutoControl::moveIntake) {
 		intakeMotor.Set(INTAKE_SPEED);
-		conveyorMotor.Set(0.3);
+		conveyorMotor.Set(CONVEYOR_SPEED);
 	}
 	else {
 		intakeMotor.Set(0);
@@ -394,15 +400,39 @@ void Robot::TestMovePID() {
 	}
 }
 
-void Robot::TestController() {
-	frc::SmartDashboard::PutBoolean("intake in", gamepad.GetRawButton(GamepadMap::INTAKE_IN_BUTTON_ID));
-	frc::SmartDashboard::PutBoolean("shoot", gamepad.GetRawButton(GamepadMap::SHOOT_BUTTON_ID));
-	frc::SmartDashboard::PutBoolean("accurate aim", gamepad.GetRawButton(GamepadMap::ACCURATE_AIM_BUTTON_ID));
-	frc::SmartDashboard::PutBoolean("quick aim", gamepad.GetRawButton(GamepadMap::QUICK_AIM_BUTTON_ID));
+void Robot::PerformSafeAutoInit() {
+	autoTimer.Start();
+}
 
-	frc::SmartDashboard::PutNumber("outtake", gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID));
-	frc::SmartDashboard::PutNumber("conveyor", gamepad.GetRawAxis(GamepadMap::CONVEYOR_AXIS_ID));
-	frc::SmartDashboard::PutNumber("intake out", gamepad.GetRawAxis(GamepadMap::INTAKE_OUT_TRIGGER_AXIS));
+void Robot::PerformSafeAutoPeriodic() {
+	if (autoTimer.Get() < 2) {
+		drivetrain.differentialDrive.ArcadeDrive(0.5, 0);
+	}
+	else {
+		drivetrain.differentialDrive.ArcadeDrive(0, 0);
+	}
+}
 
-	frc::SmartDashboard::PutNumber("POV", gamepad.GetPOV());
+void Robot::PerformUntestedAutoInit() {
+	if (autoScheduler != nullptr) {
+		delete autoScheduler;
+		autoScheduler = nullptr;
+	}
+
+	intakeSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
+	std::vector<Command*> *commands = new std::vector<Command*> {
+		new MoveToPosition(&drivetrain, 80, 30, 0, 1, 1),
+		new SpinOuttake(&outtakeMotor_Talon, &outtakeMotor_Victor, 100),
+		new MoveIntake()
+	};
+	autoScheduler = new CommandScheduler(commands);
+}
+
+void Robot::PerformUntestedAutoPeriodic() {
+	if (autoScheduler != nullptr) {
+		if (!autoScheduler->GetIsFinished()) {
+			autoScheduler->Run();
+		}
+	}
+	AutoMoveIntake();
 }

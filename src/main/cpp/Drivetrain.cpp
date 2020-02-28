@@ -1,7 +1,7 @@
 #include "Drivetrain.h"
 
 void Drivetrain::InitEncoders() {
-	const double COUNTS_PER_REV = 360;
+	const double COUNTS_PER_REV = 360/* * 10.75*/;
 	const double WHEEL_DIAMETER_in = 6;
 	const double WHEEL_CIRCUMFERENCE = GlobalConstants::PI * WHEEL_DIAMETER_in;
 	const double DISTANCE_PER_PULSE = WHEEL_CIRCUMFERENCE / COUNTS_PER_REV;

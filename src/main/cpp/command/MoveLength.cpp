@@ -25,10 +25,10 @@ void MoveLength::Run() {
 		frc::SmartDashboard::PutNumber("right_distance", RIGHT_DELTA_DISTANCE_in);
 
 		const double LEFT_SPEED = pidController.Calculate(LEFT_DELTA_DISTANCE_in, LENGTH_in);
-		drivetrain->leftDrive.PIDWrite(LEFT_SPEED);
+		drivetrain->leftDrive.PIDWrite(0.75 * LEFT_SPEED);
 
 		const double RIGHT_SPEED = pidController.Calculate(RIGHT_DELTA_DISTANCE_in, LENGTH_in);
-		drivetrain->rightDrive.PIDWrite(LEFT_SPEED);
+		drivetrain->rightDrive.PIDWrite(0.75 * LEFT_SPEED);
 
 		frc::SmartDashboard::PutNumber("left_speed", LEFT_SPEED);
  

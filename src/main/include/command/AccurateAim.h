@@ -8,6 +8,15 @@
 
 class AccurateAim: public Command {
 	private:
+		const double LINEAR_TOLERANCE_in;
+		const double ANGULAR_TOLERANCE_in;
+
+		NetworkTablesManager *networkTablesManager;
+		Drivetrain *drivetrain;
+
+		std::vector<VisionProcessingData> visionDataSet;
+
+		bool isCollectingVisionData = false;
 		MoveToPosition *moveToPosition = nullptr;
 
 	public:

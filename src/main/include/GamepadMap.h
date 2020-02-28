@@ -27,12 +27,11 @@ class GamepadMap {
 
 		//Button function IDs
 		const static int SHOOT_BUTTON_ID = Y_BUTTON_ID;
-		const static int ACCURATE_AIM_BUTTON_ID = X_BUTTON_ID;
-		const static int QUICK_AIM_BUTTON_ID = B_BUTTON_ID;
 		const static int INTAKE_IN_BUTTON_ID = LEFT_SHOULDER_BUTTON_ID;
+		const static int HANG_ARM_HOLD_BUTTON_ID = LEFT_JOYSTICK_BUTTON_ID;
 
 		//Axis function IDs
 		const static int OUTTAKE_AXIS_ID = RIGHT_JOYSTICK_Y_AXIS_ID;
-		const static int CONVEYOR_AXIS_ID = LEFT_JOYSTICK_Y_AXIS_ID;
+		const static int HANG_ARM_AXIS_ID = LEFT_JOYSTICK_Y_AXIS_ID;
 		const static int INTAKE_OUT_TRIGGER_AXIS = LEFT_TRIGGER_AXIS_ID;
 };

@@ -24,6 +24,7 @@
 #include <frc/Encoder.h>
 #include <frc/controller/PIDController.h>
 #include <frc/DoubleSolenoid.h>
+#include <frc/Timer.h>
 
 #include "networktables/NetworkTable.h"
 #include "networktables/NetworkTableEntry.h"
@@ -45,6 +46,7 @@
 #include "command/AccurateAim.h"
 #include "command/QuickAim.h"
 #include "command/SpinOuttake.h"
+#include "command/MoveIntake.h"
 #include "NetworkTablesManager.h"
 #include "AutoControl.h"
 
@@ -57,11 +59,15 @@ class Robot: public frc::TimedRobot {
 		const std::string DEFAULT_AUTO_MODE_NAME = "default";
 		const std::string CUSTOM_AUTO_MODE_NAME = "custom";
 
-		const double OUTTAKE_SPEED = 10;
+		const double MAX_OUTTAKE_SPEED = 900;
+		const double CONVEYOR_SPEED = 0.3;
 		const double INTAKE_SPEED = 0.1;
+		const double MAX_HANG_ARM_SPEED = 0.4;
 
 		frc::SendableChooser<std::string> autoModeChooser;
 		std::string selectedAutoMode;
+
+		frc::Timer autoTimer;
 
 		Drivetrain drivetrain;
 
@@ -69,7 +75,8 @@ class Robot: public frc::TimedRobot {
 		can::WPI_VictorSPX outtakeMotor_Victor{RobotMap::OUTTAKE_MOTOR_VICTOR};
 		can::WPI_VictorSPX hangMotor{RobotMap::HANG_ARM_MOTOR};
 		can::WPI_VictorSPX intakeMotor{RobotMap::INTAKE_MOTOR};
-		can::WPI_VictorSPX hangPullMotor{RobotMap::HANG_PULL_MOTOR};
+		can::WPI_VictorSPX hangPullMotor1{RobotMap::HANG_PULL_MOTOR_1};
+		can::WPI_VictorSPX hangPullMotor2{RobotMap::HANG_PULL_MOTOR_2};
 		can::WPI_VictorSPX conveyorMotor{RobotMap::CONVEYOR_MOTOR};
 
 		frc::Joystick joystick{JoystickMap::ID};
@@ -98,27 +105,38 @@ class Robot: public frc::TimedRobot {
 		QuickAim *quickAim = nullptr;
 		SpinOuttake *spinOuttake = nullptr;
 
-		bool hangPistonsExtended = false;
 		bool prevAccurateAimButtonPressed = false;
 		bool prevQuickAimButtonPressed = false;
 		bool prevShootButtonPressed = false;
 
 		void JoystickDrive();
 		void ControlDrive();
+
 		void ControlOuttake();
+
 		void ControlIntake();
 		void ControlIntakePistons();
+
 		void ControlConveyor();
+
 		void ControlHangPistons();
 		void ControlHangArm();
+		void ControlHangPull();
+
 		void ControlShoot();
 		void PerformAccurateAim();
 		void PerformQuickAim();
+
 		void AutoMoveIntake();
-		void AutoMoveOuttake();
+
 		void TestRotatePID();
 		void TestMovePID();
 		void TestController();
+
+		void PerformSafeAutoInit();
+		void PerformSafeAutoPeriodic();
+		void PerformUntestedAutoInit();
+		void PerformUntestedAutoPeriodic();
 
 	public:
 		void RobotInit() override;

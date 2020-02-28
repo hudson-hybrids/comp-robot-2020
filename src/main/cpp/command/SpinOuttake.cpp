@@ -28,11 +28,14 @@ void SpinOuttake::Run() {
 		timerStarted = true;
 	}
 
+	outtakeMotor_Talon->SetInverted(false);
 	outtakeMotor_Talon->Set(ControlMode::Velocity, targetSpeed_unitsPer100ms);
-	double talonCurrent = outtakeMotor_Talon->GetOutputCurrent();
-	outtakeMotor_Victor->Set(ControlMode::Current, -talonCurrent);
+	outtakeMotor_Victor->SetInverted(InvertType::OpposeMaster);
+	outtakeMotor_Victor->Follow(*outtakeMotor_Talon);
 
-	if (timer.Get() > 3000) {
+	std::cout << "Velocity: " << outtakeMotor_Talon->GetSelectedSensorVelocity() << "   |   %: " << outtakeMotor_Talon->GetMotorOutputPercent() << std::endl;
+
+	if (timer.Get() > 3) {
 		isFinished = true;
 	}
 }
