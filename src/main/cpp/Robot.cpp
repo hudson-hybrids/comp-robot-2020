@@ -154,8 +154,8 @@ void Robot::JoystickDrive() {
 	const double MINIMUM_Y_SPEED_MULTIPLIER = 0.55;
 	const double MINIMUM_Z_SPEED_MULTIPLIER = 0.5;
 
-	const double NORMAL_Y_SPEED_MULTIPLIER = 0.72;
-	const double NORMAL_Z_SPEED_MULTIPLIER = 0.62;
+	const double NORMAL_Y_SPEED_MULTIPLIER = 0.76;
+	const double NORMAL_Z_SPEED_MULTIPLIER = 0.64;
 
 	const double ACCELERATION = 0.004;
 
@@ -297,12 +297,12 @@ void Robot::ControlHangArm() {
 
 void Robot::ControlHangPull() {
 	if (gamepad.GetRawButton(GamepadMap::PULL_HANG_BUTTON_ID)) {
-		hangPullMotor1.Set(1.0);
-		hangPullMotor2.Set(1.0);
+		hangPullMotor1.Set(-0.75);
+		hangPullMotor2.Set(-0.75);
 	}
 	else if (gamepad.GetRawButton(GamepadMap::PUSH_HANG_BUTTON_ID)) {
-		hangPullMotor1.Set(-1.0);
-		hangPullMotor2.Set(-1.0);
+		hangPullMotor1.Set(0.75);
+		hangPullMotor2.Set(0.75);
 	}
 	else {
 		hangPullMotor1.Set(0);
