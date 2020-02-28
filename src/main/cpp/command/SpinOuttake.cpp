@@ -13,6 +13,7 @@ SpinOuttake::SpinOuttake(can::WPI_TalonSRX *outtakeMotor_Talon, can::WPI_VictorS
 
 void SpinOuttake::SetSpeed(double targetSpeed_RPM) {
 	ResetTimer();
+	this->targetSpeed_RPM = targetSpeed_RPM;
 	targetSpeed_unitsPer100ms = targetSpeed_RPM * 4096 / 600;
 }
 
@@ -28,7 +29,7 @@ void SpinOuttake::Run() {
 		timerStarted = true;
 	}
 
-	frc::SmartDashboard::PutNumber("outtake_velocity", targetSpeed_unitsPer100ms);
+	frc::SmartDashboard::PutNumber("outtake_velocity", targetSpeed_RPM);
 
 	outtakeMotor_Talon->SetInverted(false);
 	outtakeMotor_Talon->Set(ControlMode::Velocity, targetSpeed_unitsPer100ms);

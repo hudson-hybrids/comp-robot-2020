@@ -18,6 +18,7 @@ using namespace ctre::phoenix::motorcontrol;
 class SpinOuttake: public Command {
 	private:
 		double targetSpeed_unitsPer100ms = 0;
+		double targetSpeed_RPM = 0;
 		bool timerStarted = false;
 		frc::Timer timer;
 

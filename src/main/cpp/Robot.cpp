@@ -10,7 +10,7 @@
 //BEGIN OVERRIDES
 
 void Robot::RobotInit() {
-	frc::CameraServer::GetInstance()->StartAutomaticCapture("rear_camera", 0);
+	//frc::CameraServer::GetInstance()->StartAutomaticCapture("rear_camera", 0);
 
 	autoModeChooser.SetDefaultOption(DEFAULT_AUTO_MODE_NAME, DEFAULT_AUTO_MODE_NAME);
 	autoModeChooser.AddOption(CUSTOM_AUTO_MODE_NAME, CUSTOM_AUTO_MODE_NAME);
@@ -20,12 +20,13 @@ void Robot::RobotInit() {
 	frc::SmartDashboard::PutBoolean("light_pin", true);
 
 	frc::SmartDashboard::PutNumber("outtake_velocity", 0);
+	frc::SmartDashboard::PutNumber("max_outtake_velocity", maxOuttakeSpeed);
 
-	frc::SmartDashboard::PutNumber("target_length", 0);
-	frc::SmartDashboard::PutNumber("left_distance", 0);
-	frc::SmartDashboard::PutNumber("right_distance", 0);
+	//frc::SmartDashboard::PutNumber("target_length", 0);
+	//frc::SmartDashboard::PutNumber("left_distance", 0);
+	//frc::SmartDashboard::PutNumber("right_distance", 0);
 
-	Drive::InitPID_SD();
+	//Drive::InitPID_SD();
 
 	const int TALON_TIMEOUT_MILLIS = 30;
 	const int OUTTAKE_ENCODER_ID = 0;
@@ -89,7 +90,9 @@ void Robot::RobotPeriodic() {
 	bool lightOn = frc::SmartDashboard::GetBoolean("light_pin", true);
 	lightPin.Set(lightOn);
 
-	Drive::ControlPID_SD();
+	maxOuttakeSpeed = frc::SmartDashboard::GetNumber("max_outtake_velocity", maxOuttakeSpeed);
+
+	//Drive::ControlPID_SD();
 }
 
 void Robot::AutonomousInit() {
@@ -227,14 +230,12 @@ void Robot::ControlDrive() {
 void Robot::ControlOuttake() {
 	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
 	if (spinOuttake != nullptr) {
-
-
 		if (stickValue > 0.2) {
-			spinOuttake->SetSpeed(MAX_OUTTAKE_SPEED * stickValue);
+			spinOuttake->SetSpeed(maxOuttakeSpeed * stickValue);
 			spinOuttake->Run();
 		}
 		else if (stickValue < -0.2) {
-			spinOuttake->SetSpeed(MAX_OUTTAKE_SPEED * stickValue);
+			spinOuttake->SetSpeed(maxOuttakeSpeed * stickValue);
 			spinOuttake->Run();
 		}
 		else {
@@ -320,7 +321,7 @@ void Robot::ControlHangPull() {
 void Robot::ControlShoot() {
 	if (gamepad.GetRawButton(GamepadMap::SHOOT_BUTTON_ID)) {
 		if (!prevShootButtonPressed) {
-			spinOuttake->SetSpeed(MAX_OUTTAKE_SPEED);
+			spinOuttake->SetSpeed(maxOuttakeSpeed);
 		}
 		else {
 			if (spinOuttake->GetIsFinished()) {
