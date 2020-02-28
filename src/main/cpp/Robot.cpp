@@ -19,7 +19,7 @@ void Robot::RobotInit() {
 	frc::SmartDashboard::PutBoolean("reset_pin", false);
 	frc::SmartDashboard::PutBoolean("light_pin", true);
 
-	frc::SmartDashboard::PutBoolean("lock_arm", false);
+	frc::SmartDashboard::PutNumber("outtake_velocity", 0);
 
 	frc::SmartDashboard::PutNumber("target_length", 0);
 	frc::SmartDashboard::PutNumber("left_distance", 0);
@@ -227,6 +227,8 @@ void Robot::ControlDrive() {
 void Robot::ControlOuttake() {
 	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
 	if (spinOuttake != nullptr) {
+
+
 		if (stickValue > 0.2) {
 			spinOuttake->SetSpeed(MAX_OUTTAKE_SPEED * stickValue);
 			spinOuttake->Run();

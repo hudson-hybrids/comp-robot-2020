@@ -5,6 +5,7 @@
 
 #include <frc/Encoder.h>
 #include <frc/Timer.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 #include <units/units.h>
 

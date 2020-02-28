@@ -28,12 +28,12 @@ void SpinOuttake::Run() {
 		timerStarted = true;
 	}
 
+	frc::SmartDashboard::PutNumber("outtake_velocity", targetSpeed_unitsPer100ms);
+
 	outtakeMotor_Talon->SetInverted(false);
 	outtakeMotor_Talon->Set(ControlMode::Velocity, targetSpeed_unitsPer100ms);
 	outtakeMotor_Victor->SetInverted(InvertType::OpposeMaster);
 	outtakeMotor_Victor->Follow(*outtakeMotor_Talon);
-
-	std::cout << "Velocity: " << outtakeMotor_Talon->GetSelectedSensorVelocity() << "   |   %: " << outtakeMotor_Talon->GetMotorOutputPercent() << std::endl;
 
 	if (timer.Get() > 3) {
 		isFinished = true;
