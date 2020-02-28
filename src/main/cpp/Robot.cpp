@@ -151,11 +151,11 @@ void Robot::JoystickDrive() {
 	const double MAXIMUM_Y_SPEED_MULTIPLIER = 0.9;
 	const double MAXIMUM_Z_SPEED_MULTIPLIER = 0.72;
 
-	const double MINIMUM_Y_SPEED_MULTIPLIER = 0.48;
-	const double MINIMUM_Z_SPEED_MULTIPLIER = 0.4;
+	const double MINIMUM_Y_SPEED_MULTIPLIER = 0.55;
+	const double MINIMUM_Z_SPEED_MULTIPLIER = 0.5;
 
-	const double NORMAL_Y_SPEED_MULTIPLIER = 0.6;
-	const double NORMAL_Z_SPEED_MULTIPLIER = 0.58;
+	const double NORMAL_Y_SPEED_MULTIPLIER = 0.72;
+	const double NORMAL_Z_SPEED_MULTIPLIER = 0.62;
 
 	const double ACCELERATION = 0.004;
 
