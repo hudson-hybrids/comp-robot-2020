@@ -19,8 +19,9 @@ void Robot::RobotInit() {
 	frc::SmartDashboard::PutBoolean("reset_pin", false);
 	frc::SmartDashboard::PutBoolean("light_pin", true);
 
-	frc::SmartDashboard::PutNumber("outtake_velocity", 0);
 	frc::SmartDashboard::PutNumber("max_outtake_velocity", maxOuttakeSpeed);
+	frc::SmartDashboard::PutNumber("outtake_velocity", 0);
+	frc::SmartDashboard::PutNumber("target_outtake_velocity", 0);
 
 	//frc::SmartDashboard::PutNumber("target_length", 0);
 	//frc::SmartDashboard::PutNumber("left_distance", 0);
@@ -32,15 +33,15 @@ void Robot::RobotInit() {
 	const int OUTTAKE_ENCODER_ID = 0;
 	outtakeMotor_Talon.ConfigFactoryDefault();
 	outtakeMotor_Talon.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, OUTTAKE_ENCODER_ID, TALON_TIMEOUT_MILLIS);
-	outtakeMotor_Talon.SetSensorPhase(true);
+	//outtakeMotor_Talon.SetSensorPhase(true);
 	outtakeMotor_Talon.ConfigPeakOutputForward(1, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigPeakOutputReverse(-1, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigNominalOutputForward(0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigNominalOutputReverse(0, TALON_TIMEOUT_MILLIS);
-	outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.2, TALON_TIMEOUT_MILLIS);
+	//outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	//outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	//outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	//outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.1, TALON_TIMEOUT_MILLIS);
 }
 
 void Robot::RobotPeriodic() {
@@ -91,7 +92,7 @@ void Robot::RobotPeriodic() {
 	lightPin.Set(lightOn);
 
 	maxOuttakeSpeed = frc::SmartDashboard::GetNumber("max_outtake_velocity", maxOuttakeSpeed);
-
+	
 	//Drive::ControlPID_SD();
 }
 
@@ -100,7 +101,8 @@ void Robot::AutonomousInit() {
 	std::cout << "INFO > BEGINNING " << selectedAutoMode << " AUTO MODE" << std::endl;
 
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
-		PerformUntestedAutoInit();
+		//PerformUntestedAutoInit();
+		PerformSafeAutoInit();
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
@@ -112,7 +114,8 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
 	if (selectedAutoMode == DEFAULT_AUTO_MODE_NAME) {
-		PerformUntestedAutoPeriodic();
+		//PerformUntestedAutoPeriodic();
+		PerformSafeAutoPeriodic();
 	}
 	else if (selectedAutoMode == CUSTOM_AUTO_MODE_NAME) {
 
@@ -125,12 +128,7 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {
 	intakeMotor.Set(0);
 	conveyorMotor.Set(0);
-
-	if (spinOuttake != nullptr) {
-		delete spinOuttake;
-		spinOuttake = nullptr;
-	}
-	spinOuttake = new SpinOuttake(&outtakeMotor_Talon, &outtakeMotor_Victor);
+	SpinOuttake::Stop(&outtakeMotor_Talon, &outtakeMotor_Victor);
 }
 
 void Robot::TeleopPeriodic() {
@@ -138,6 +136,7 @@ void Robot::TeleopPeriodic() {
 	ControlOuttake();
 	ControlIntake();
 	ControlConveyor();
+	//ControlShoot();
 	ControlIntakePistons();
 	ControlHangPull();
 	ControlHangPistons();
@@ -204,7 +203,7 @@ void Robot::JoystickDrive() {
 void Robot::ControlDrive() {
 	if (joystick.GetRawButton(JoystickMap::ACCURATE_AIM_BUTTON)) {
 		//PerformAccurateAim();
-		TestRotatePID();
+		//TestRotatePID();
 		prevAccurateAimButtonPressed = true;
 	}
 	else {
@@ -214,7 +213,7 @@ void Robot::ControlDrive() {
 	if (joystick.GetRawButton(JoystickMap::QUICK_AIM_BUTTON)) {
 		if (!joystick.GetRawButton(JoystickMap::ACCURATE_AIM_BUTTON)) {
 			//PerformQuickAim();
-			TestMovePID();
+			//TestMovePID();
 		}
 		prevQuickAimButtonPressed = true;
 	}
@@ -229,18 +228,11 @@ void Robot::ControlDrive() {
 
 void Robot::ControlOuttake() {
 	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
-	if (spinOuttake != nullptr) {
-		if (stickValue > 0.2) {
-			spinOuttake->SetSpeed(maxOuttakeSpeed * stickValue);
-			spinOuttake->Run();
-		}
-		else if (stickValue < -0.2) {
-			spinOuttake->SetSpeed(maxOuttakeSpeed * stickValue);
-			spinOuttake->Run();
-		}
-		else {
-			spinOuttake->Stop();
-		}
+	if (abs(stickValue) > 0.1) {
+		SpinOuttake::Run(&outtakeMotor_Talon, &outtakeMotor_Victor, maxOuttakeSpeed * stickValue);
+	}
+	else {
+		SpinOuttake::Stop(&outtakeMotor_Talon, &outtakeMotor_Victor);
 	}
 }
 
@@ -271,10 +263,10 @@ void Robot::ControlIntakePistons() {
 
 void Robot::ControlConveyor() {
 	if (gamepad.GetPOV() == 0) {
-		conveyorMotor.Set(-CONVEYOR_SPEED);
+		conveyorMotor.Set(CONVEYOR_SPEED);
 	}
 	else if (gamepad.GetPOV() == 180) {
-		conveyorMotor.Set(CONVEYOR_SPEED);
+		conveyorMotor.Set(-CONVEYOR_SPEED);
 	}
 	else {
 		conveyorMotor.Set(0);
@@ -295,7 +287,7 @@ void Robot::ControlHangPistons() {
 
 void Robot::ControlHangArm() {
 	double speed = gamepad.GetRawAxis(GamepadMap::HANG_ARM_AXIS_ID);
-	if (abs(speed) > 0.1) {
+	if (abs(speed) > 0.06) {
 		hangMotor.Set(speed * MAX_HANG_ARM_SPEED);
 	}
 	else {
@@ -304,11 +296,11 @@ void Robot::ControlHangArm() {
 }
 
 void Robot::ControlHangPull() {
-	if (joystick.GetRawButton(JoystickMap::PULL_HANG_BUTTON_ID)) {
+	if (gamepad.GetRawButton(GamepadMap::PULL_HANG_BUTTON_ID)) {
 		hangPullMotor1.Set(1.0);
 		hangPullMotor2.Set(1.0);
 	}
-	else if (joystick.GetRawButton(JoystickMap::PUSH_HANG_BUTTON_ID)) {
+	else if (gamepad.GetRawButton(GamepadMap::PUSH_HANG_BUTTON_ID)) {
 		hangPullMotor1.Set(-1.0);
 		hangPullMotor2.Set(-1.0);
 	}
@@ -321,17 +313,19 @@ void Robot::ControlHangPull() {
 void Robot::ControlShoot() {
 	if (gamepad.GetRawButton(GamepadMap::SHOOT_BUTTON_ID)) {
 		if (!prevShootButtonPressed) {
-			spinOuttake->SetSpeed(maxOuttakeSpeed);
+			outtakeTimer.Reset();
+			outtakeTimer.Start();
 		}
 		else {
-			if (spinOuttake->GetIsFinished()) {
+			if (outtakeTimer.Get() > 3) {
 				conveyorMotor.Set(0.3);
 			}
 		}
+		SpinOuttake::Run(&outtakeMotor_Talon, &outtakeMotor_Victor, maxOuttakeSpeed);
 		prevShootButtonPressed = true;
 	}
 	else {
-		spinOuttake->Stop();
+		SpinOuttake::Stop(&outtakeMotor_Talon, &outtakeMotor_Victor);
 		prevShootButtonPressed = false;
 	}
 }
@@ -404,19 +398,29 @@ void Robot::TestMovePID() {
 }
 
 void Robot::PerformSafeAutoInit() {
+	autoTimer.Reset();
 	autoTimer.Start();
 }
 
 void Robot::PerformSafeAutoPeriodic() {
+	
 	if (autoTimer.Get() < 2) {
 		drivetrain.differentialDrive.ArcadeDrive(0.5, 0);
 	}
 	else {
 		drivetrain.differentialDrive.ArcadeDrive(0, 0);
 	}
+	
+	/*
+	SpinOuttake::Run(&outtakeMotor_Talon, &outtakeMotor_Victor, maxOuttakeSpeed);
+	if (autoTimer.Get() > 3) {
+		conveyorMotor.Set(0.3);
+	}
+	*/
 }
 
 void Robot::PerformUntestedAutoInit() {
+	/*
 	if (autoScheduler != nullptr) {
 		delete autoScheduler;
 		autoScheduler = nullptr;
@@ -429,13 +433,16 @@ void Robot::PerformUntestedAutoInit() {
 		new MoveIntake()
 	};
 	autoScheduler = new CommandScheduler(commands);
+	*/
 }
 
 void Robot::PerformUntestedAutoPeriodic() {
+	/*
 	if (autoScheduler != nullptr) {
 		if (!autoScheduler->GetIsFinished()) {
 			autoScheduler->Run();
 		}
 	}
 	AutoMoveIntake();
+	*/
 }

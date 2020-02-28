@@ -59,15 +59,16 @@ class Robot: public frc::TimedRobot {
 		const std::string DEFAULT_AUTO_MODE_NAME = "default";
 		const std::string CUSTOM_AUTO_MODE_NAME = "custom";
 
-		double maxOuttakeSpeed = 900;
+		double maxOuttakeSpeed = 1.0;
 		const double CONVEYOR_SPEED = 0.3;
-		const double INTAKE_SPEED = 0.1;
+		const double INTAKE_SPEED = 0.21;
 		const double MAX_HANG_ARM_SPEED = 0.4;
 
 		frc::SendableChooser<std::string> autoModeChooser;
 		std::string selectedAutoMode;
 
 		frc::Timer autoTimer;
+		frc::Timer outtakeTimer;
 
 		Drivetrain drivetrain;
 
@@ -103,7 +104,6 @@ class Robot: public frc::TimedRobot {
 		MoveLength *testMove = nullptr;
 		AccurateAim *accurateAim = nullptr;
 		QuickAim *quickAim = nullptr;
-		SpinOuttake *spinOuttake = nullptr;
 
 		bool prevAccurateAimButtonPressed = false;
 		bool prevQuickAimButtonPressed = false;
