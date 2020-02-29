@@ -277,7 +277,7 @@ void Robot::ControlHangPistons() {
 	if (joystick.GetRawButton(JoystickMap::HANG_SOLENOID_FORWARD_BUTTON_ID)) {
 		hangSolenoid.Set(frc::DoubleSolenoid::Value::kReverse);
 	}
-	else if (joystick.GetRawButton(JoystickMap::HANG_SOLENOID_REVERSE_BUTTON_ID)) {
+	else if (joystick.GetRawButton(JoystickMap::HANG_SOLENOID_REVERSE_BUTTON_ID) || gamepad.GetRawButton(GamepadMap::COORD_HANG_BUTTON_ID)) {
 		hangSolenoid.Set(frc::DoubleSolenoid::Value::kForward);
 	}
 	else {
@@ -297,7 +297,7 @@ void Robot::ControlHangArm() {
 
 void Robot::ControlHangPull() {
 	double speed = 0.9;
-	if (gamepad.GetRawButton(GamepadMap::PULL_HANG_BUTTON_ID)) {
+	if (gamepad.GetRawButton(GamepadMap::PULL_HANG_BUTTON_ID) || gamepad.GetRawButton(GamepadMap::COORD_HANG_BUTTON_ID)) {
 		hangPullMotor1.Set(-speed);
 		hangPullMotor2.Set(-speed);
 	}
@@ -308,12 +308,6 @@ void Robot::ControlHangPull() {
 	else {
 		hangPullMotor1.Set(0);
 		hangPullMotor2.Set(0);
-	}
-}
-
-void Robot::ControlCoordHang() {
-	if (gamepad.GetRawButton(GamepadMap::COORD_HANG_BUTTON_ID)) {
-		
 	}
 }
 
