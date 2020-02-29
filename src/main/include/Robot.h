@@ -59,7 +59,7 @@ class Robot: public frc::TimedRobot {
 		const std::string DEFAULT_AUTO_MODE_NAME = "default";
 		const std::string CUSTOM_AUTO_MODE_NAME = "custom";
 
-		double maxOuttakeSpeed = 0.98;
+		double maxOuttakeSpeed = 0.79;
 		const double CONVEYOR_SPEED = 0.3;
 		const double INTAKE_SPEED = 0.21;
 		const double MAX_HANG_ARM_SPEED = 0.4;

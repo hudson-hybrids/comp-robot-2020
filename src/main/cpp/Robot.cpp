@@ -296,13 +296,14 @@ void Robot::ControlHangArm() {
 }
 
 void Robot::ControlHangPull() {
+	double speed = 0.9;
 	if (gamepad.GetRawButton(GamepadMap::PULL_HANG_BUTTON_ID)) {
-		hangPullMotor1.Set(-0.75);
-		hangPullMotor2.Set(-0.75);
+		hangPullMotor1.Set(-speed);
+		hangPullMotor2.Set(-speed);
 	}
 	else if (gamepad.GetRawButton(GamepadMap::PUSH_HANG_BUTTON_ID)) {
-		hangPullMotor1.Set(0.75);
-		hangPullMotor2.Set(0.75);
+		hangPullMotor1.Set(speed);
+		hangPullMotor2.Set(speed);
 	}
 	else {
 		hangPullMotor1.Set(0);
