@@ -122,6 +122,7 @@ class Robot: public frc::TimedRobot {
 		void ControlHangPistons();
 		void ControlHangArm();
 		void ControlHangPull();
+		void ControlCoordHang();
 
 		void ControlShoot();
 		void PerformAccurateAim();

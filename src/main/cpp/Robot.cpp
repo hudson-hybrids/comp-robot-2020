@@ -311,6 +311,12 @@ void Robot::ControlHangPull() {
 	}
 }
 
+void Robot::ControlCoordHang() {
+	if (gamepad.GetRawButton(GamepadMap::COORD_HANG_BUTTON_ID)) {
+		
+	}
+}
+
 void Robot::ControlShoot() {
 	if (gamepad.GetRawButton(GamepadMap::SHOOT_BUTTON_ID)) {
 		if (!prevShootButtonPressed) {
