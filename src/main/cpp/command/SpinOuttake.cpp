@@ -2,7 +2,7 @@
 
 void SpinOuttake::Run(can::WPI_TalonSRX *outtakeMotor_Talon, can::WPI_VictorSPX *outtakeMotor_Victor, double targetSpeed_unitsPer100ms) {
 	frc::SmartDashboard::PutNumber("outtake_velocity", outtakeMotor_Talon->GetSelectedSensorVelocity());
-	frc::SmartDashboard::PutNumber("target_outtake_velocity", targetSpeed_unitsPer100ms);
+	frc::SmartDashboard::PutNumber("outtake_percent", outtakeMotor_Talon->GetMotorOutputPercent());
 
 	//outtakeMotor_Talon->SetInverted(false);
 	outtakeMotor_Talon->Set(ControlMode::Velocity, targetSpeed_unitsPer100ms);

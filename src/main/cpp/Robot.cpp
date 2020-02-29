@@ -21,7 +21,7 @@ void Robot::RobotInit() {
 
 	frc::SmartDashboard::PutNumber("max_outtake_velocity", maxOuttakeSpeed);
 	frc::SmartDashboard::PutNumber("outtake_velocity", 0);
-	frc::SmartDashboard::PutNumber("target_outtake_velocity", 0);
+	frc::SmartDashboard::PutNumber("outtake_percent", 0);
 
 	//frc::SmartDashboard::PutNumber("target_length", 0);
 	//frc::SmartDashboard::PutNumber("left_distance", 0);
@@ -41,7 +41,7 @@ void Robot::RobotInit() {
 	outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.2, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.014, TALON_TIMEOUT_MILLIS);
 }
 
 void Robot::RobotPeriodic() {
@@ -228,12 +228,15 @@ void Robot::ControlDrive() {
 
 void Robot::ControlOuttake() {
 	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
+	SpinOuttake::Run(&outtakeMotor_Talon, &outtakeMotor_Victor, maxOuttakeSpeed * stickValue);
+	/*
 	if (abs(stickValue) > 0.06) {
 		SpinOuttake::Run(&outtakeMotor_Talon, &outtakeMotor_Victor, maxOuttakeSpeed * stickValue);
 	}
 	else {
 		SpinOuttake::Stop(&outtakeMotor_Talon, &outtakeMotor_Victor);
 	}
+	*/
 }
 
 void Robot::ControlIntake() {
@@ -297,12 +300,12 @@ void Robot::ControlHangArm() {
 
 void Robot::ControlHangPull() {
 	if (gamepad.GetRawButton(GamepadMap::PULL_HANG_BUTTON_ID)) {
-		hangPullMotor1.Set(0.5);
-		hangPullMotor2.Set(0.5);
+		hangPullMotor1.Set(0.3);
+		hangPullMotor2.Set(0.3);
 	}
 	else if (gamepad.GetRawButton(GamepadMap::PUSH_HANG_BUTTON_ID)) {
-		hangPullMotor1.Set(-0.5);
-		hangPullMotor2.Set(-0.5);
+		hangPullMotor1.Set(-0.3);
+		hangPullMotor2.Set(-0.3);
 	}
 	else {
 		hangPullMotor1.Set(0);
