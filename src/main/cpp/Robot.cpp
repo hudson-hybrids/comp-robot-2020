@@ -21,7 +21,7 @@ void Robot::RobotInit() {
 
 	frc::SmartDashboard::PutNumber("max_outtake_velocity", maxOuttakeSpeed);
 	frc::SmartDashboard::PutNumber("outtake_velocity", 0);
-	frc::SmartDashboard::PutNumber("target_outtake_velocity", 0);
+	frc::SmartDashboard::PutNumber("outtake_percent", 0);
 
 	//frc::SmartDashboard::PutNumber("target_length", 0);
 	//frc::SmartDashboard::PutNumber("left_distance", 0);
@@ -33,15 +33,15 @@ void Robot::RobotInit() {
 	const int OUTTAKE_ENCODER_ID = 0;
 	outtakeMotor_Talon.ConfigFactoryDefault();
 	outtakeMotor_Talon.ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative, OUTTAKE_ENCODER_ID, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.SetSensorPhase(true);
+	outtakeMotor_Talon.SetSensorPhase(true);
 	outtakeMotor_Talon.ConfigPeakOutputForward(1, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigPeakOutputReverse(-1, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigNominalOutputForward(0, TALON_TIMEOUT_MILLIS);
 	outtakeMotor_Talon.ConfigNominalOutputReverse(0, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
-	//outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.1, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kP(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kI(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kD(OUTTAKE_ENCODER_ID, 0, TALON_TIMEOUT_MILLIS);
+	outtakeMotor_Talon.Config_kF(OUTTAKE_ENCODER_ID, 0.014, TALON_TIMEOUT_MILLIS);
 }
 
 void Robot::RobotPeriodic() {
@@ -228,12 +228,15 @@ void Robot::ControlDrive() {
 
 void Robot::ControlOuttake() {
 	double stickValue = gamepad.GetRawAxis(GamepadMap::OUTTAKE_AXIS_ID);
-	if (abs(stickValue) > 0.1) {
+	SpinOuttake::Run(&outtakeMotor_Talon, &outtakeMotor_Victor, maxOuttakeSpeed * stickValue);
+	/*
+	if (abs(stickValue) > 0.06) {
 		SpinOuttake::Run(&outtakeMotor_Talon, &outtakeMotor_Victor, maxOuttakeSpeed * stickValue);
 	}
 	else {
 		SpinOuttake::Stop(&outtakeMotor_Talon, &outtakeMotor_Victor);
 	}
+	*/
 }
 
 void Robot::ControlIntake() {
