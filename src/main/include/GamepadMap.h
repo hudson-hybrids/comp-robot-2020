@@ -31,6 +31,7 @@ class GamepadMap {
 		const static int HANG_ARM_HOLD_BUTTON_ID = LEFT_JOYSTICK_BUTTON_ID;
 		const static int PUSH_HANG_BUTTON_ID = A_BUTTON_ID;
 		const static int PULL_HANG_BUTTON_ID = X_BUTTON_ID;
+		const static int COORD_HANG_BUTTON_ID = B_BUTTON_ID;
 
 		//Axis function IDs
 		const static int OUTTAKE_AXIS_ID = RIGHT_JOYSTICK_Y_AXIS_ID;
